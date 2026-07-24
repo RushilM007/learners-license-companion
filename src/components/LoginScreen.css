@@ -1,0 +1,90 @@
+body{
+    background: #F2F3F5;
+}
+
+#LoginCard{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding: 20px;
+}
+
+#signInForm{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    width:100%;
+    max-width: 360px;
+}
+
+#signInButton{
+    background: #2563EB;
+    border:none;
+    border-radius: 8px;
+    height: 48px;
+    width: 100%;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.loginScreenLabel{
+    text-align:left;
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+#emailInput{
+    margin-bottom:12px;
+}
+
+.loginScreenInputs{
+    height:42px;
+    width:100%;
+    border-radius: 8px;
+    border:none;
+    padding: 14px;
+    gap: 10px;
+   
+}
+
+#loginCardHeader{
+    margin-bottom:90px;
+    height: 29px;
+    width: 100%;
+    font-size: 24px;
+    font-weight:bold;
+    text-align:center;
+}
+
+#signUpLiner{
+    width: 100%;
+    height: 17px;
+    font-size: 14px;
+    color: #475569;
+    text-align:center;
+}
+
+#signUpHyperLink{
+    color: #2563EB;
+    font-weight:bold;
+}
+
+#forgotPassword{
+    text-align:right;
+    font-size: 14px;
+    margin-top:15px;
+    margin-bottom:15px;
+    color:#2563EB;
+    font-weight:bold;
+}
+
+@media (max-width: 480px){
+    #loginCardHeader{
+        margin-bottom:40px;
+    }
+}
