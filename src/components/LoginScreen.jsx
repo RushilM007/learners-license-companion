@@ -1,6 +1,6 @@
 import React from "react"
-import { Link } from "react-router-dom"
-import './LoginScreen.css'
+import { Link, Navigate, useNavigate } from "react-router-dom"
+import './AuthScreens.css'
 import {useState} from 'react'
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {auth} from "./firebase"
@@ -10,12 +10,14 @@ export default function LoginScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+
+    const navigate = useNavigate()
    
     async function onSubmit(e){
         e.preventDefault();
         try{
             await signInWithEmailAndPassword(auth,email,password);
-            console.log("Signed In")
+            navigate("/HomeScreen")
         } catch (error){
             setError(`Firebase Error [${error.code}]: ${error.message}`);
         }
@@ -24,38 +26,36 @@ export default function LoginScreen(){
     return (
         <>
         <main>
-            <div id = "LoginCard">
-                <h3 id = "LoginCardHeader">Sign in to Learner's License Companion</h3>
-                <form id = "LoginForm">
-                    <label className = "LoginScreenLabel" htmlFor="email"> Email Address </label>
+            <div id = "AuthCard">
+                <h3 id = "AuthHeader">Sign in to Learner's License Companion</h3>
+                <form id = "AuthForm">
+                    <label className = "AuthLabel" htmlFor="email"> Email Address </label>
                     
                     <input 
-                        className = "LoginScreenInput" 
+                        className = "AuthInput" 
                         id = "email" 
                         onChange = {(e)=>setEmail(e.target.value)} 
                         placeholder = "name@example.com" 
                         type = "email" 
-                        name = "email" 
                     />
 
-                    <label className = "LoginScreenLabel" htmlFor="password">Password</label>
+                    <label className = "AuthLabel" htmlFor="password">Password</label>
                     
                     <input 
-                        className = "LoginScreenInput" 
+                        className = "AuthInput" 
                         id = "password" 
                         placeholder = "••••••••" 
                         onChange = {(e)=>setPassword(e.target.value)} 
                         type = "password" 
-                        name = "password" 
                     />
 
-                    <a id = "ForgotPassword">Forgot Password?</a>
+                    <Link to="/ForgotPassword" id = "AuthHyperLink">Forgot Password?</Link>
 
-                    <button id = "SignInButton" onClick = {onSubmit}>Sign In</button>
+                    <button id = "AuthButton" onClick = {onSubmit}>Sign In</button>
 
-                    <p id = "SignUpLiner">Don't have an account? <Link to="/SignUp" id = "SignUpHyperLink">Sign Up</Link></p>
+                    <p id = "AuthAlternateOptionLiner">Don't have an account? <Link to="/SignUp" id = "AuthHyperLink">Sign Up</Link></p>
 
-                    {error!=='' && <p id = "ErrorMessage">{error}</p>}
+                    {error!=='' && <p id = "AuthErrorMessage">{error}</p>}
 
                 </form>
             </div>

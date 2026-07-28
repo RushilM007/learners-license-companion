@@ -1,5 +1,5 @@
-import {Navigate, Link, useNavigate} from "react-router-dom"
-import './SignUpScreen.css'
+import {Navigate, Link, useNavigate, useFormAction} from "react-router-dom"
+import './AuthScreens.css'
 import React, {useState} from 'react'
 import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth, db} from "./firebase"
@@ -10,13 +10,14 @@ export default function SignUpScreen(){
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
+    const [name, setName] = useState('');
+
+    const navigate = useNavigate();
 
     async function handleRegister(e){
         e.preventDefault();
-        if (firstName === '' || lastName === ''){
-            setError("Missing fields")
+        if (name ===""){
+            setError("Please fill up the missing fields.")
             return;
         }
 
@@ -31,78 +32,71 @@ export default function SignUpScreen(){
             if (user){
                 await setDoc(doc(db,"Users",user.uid),{
                     email:user.email,
-                    firstName: firstName,
-                    lastName: lastName
+                    name: name
                 })
+                
             }
             } catch (error){
                 setError(`Firebase Error [${error.code}]: ${error.message}`);
+                return;
             }
+        navigate("/")
     }
 
     return (
         <>
         <main>
-            <div id = "SignUpCard">
+            <div id = "AuthCard">
 
-                <h3 id = "SignupCardHeader">Sign Up for Learner's License Companion</h3>
+                <h3 id = "AuthHeader">Sign Up for Learner's License Companion</h3>
 
-                <form id = "signInForm" onSubmit = {handleRegister}>
+                <form id = "AuthForm" onSubmit = {handleRegister}>
 
-                    <label className = "SignupScreenLabel" htmlFor="firstName">First Name</label>
+                    <label className = "AuthLabel" htmlFor="name">Name</label>
 
                     <input 
-                        className = "SignupScreenInputs" 
-                        onChange = {(e)=>setFirstName(e.target.value)} 
-                        id = "firstNameInput" 
-                        placeholder = "John" 
+                        className = "AuthInput" 
+                        onChange = {(e)=>setName(e.target.value)} 
+                        id = "name" 
+                        placeholder = "John Doe" 
                     />
 
-                    <label className = "SignupScreenLabel" htmlFor="lastName">Last Name</label>
+                    <label className = "AuthLabel" htmlFor="email">Email Address</label>
                     
                     <input 
-                        className = "SignupScreenInputs" 
-                        onChange = {(e)=>setLastName(e.target.value)} 
-                        id = "lastNameInput" 
-                        placeholder = "Doe"  
-                    />
-
-                    <label className = "SignupScreenLabel" htmlFor="email">Email Address</label>
-                    
-                    <input 
-                        className = "SignupScreenInputs" 
+                        className = "AuthInput" 
                         onChange = {(e)=>setEmail(e.target.value)} 
-                        id = "emailInput" 
+                        id = "email" 
                         placeholder = "name@example.com" 
                         type = "email" 
                     />
 
-                    <label className = "SignupScreenLabel" htmlFor="password1">Password</label>
+                    <label className = "AuthLabel" htmlFor="password">Password</label>
 
                     <input 
-                        className = "SignupScreenInputs" 
-                        id = "password1" 
+                        className = "AuthInput" 
+                        id = "password" 
                         placeholder = "••••••••" 
                         type = "password" 
-                        name = "password" 
                         onChange = {(e)=>setPassword(e.target.value)}
                     />
 
-                    <label className = "SignupScreenLabel" htmlFor="confirmPassword">Confirm Password</label>
+                    <label className = "AuthLabel" htmlFor="confirmPassword">Confirm Password</label>
 
                     <input 
-                        className = "SignupScreenInputs" 
+                        className = "AuthInput" 
                         id = "confirmPassword" 
                         onChange = {(e)=>setConfirmPassword(e.target.value)} 
                         placeholder = "••••••••" 
                         type = "password" 
                     />
 
-                    <button id = "signUpButton">Sign Up</button>
+                    <button id = "AuthButton">Sign Up</button>
 
-                    <p id = "signInLiner">Have an account? <Link to="/" id = "signUpHyperLink">Login</Link></p>
+                    <p id = "AuthAlternateOptionLiner">Have an account? <Link to="/" id = "AuthHyperLink">Login</Link></p>
 
-                    {error!=='' && <p id = "errorMessage">{error}</p>}
+                    {error!=='' && <p id = "AuthErrorMessage">{error}</p>}
+
                 </form>
             </div>
         </main>
