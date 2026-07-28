@@ -2,7 +2,7 @@ body{
     background: #F2F3F5;
 }
 
-#LoginCard{
+#SignUpCard{
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -11,7 +11,7 @@ body{
     padding: 20px;
 }
 
-#LoginForm{
+#signInForm{
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -19,7 +19,7 @@ body{
     max-width: 360px;
 }
 
-#SignInButton{
+#signUpButton{
     background: #2563EB;
     border:none;
     border-radius: 8px;
@@ -30,7 +30,7 @@ body{
     font-weight: 600;
 }
 
-.LoginScreenLabel{
+.SignupScreenLabel{
     text-align:left;
     color: #475569;
     font-weight: 600;
@@ -38,18 +38,22 @@ body{
     font-size: 13px;
 }
 
-.LoginScreenInput{
+#emailInput{
+    margin-bottom:12px;
+}
+
+.SignupScreenInputs{
     height:42px;
     width:100%;
     border-radius: 8px;
     border:none;
     padding: 14px;
     gap: 10px;
-    margin-bottom:12px;
+    margin-bottom: 20px;
    
 }
 
-#LoginCardHeader{
+#SignupCardHeader{
     margin-bottom:90px;
     height: 29px;
     width: 100%;
@@ -58,7 +62,7 @@ body{
     text-align:center;
 }
 
-#SignUpLiner{
+#signInLiner{
     width: 100%;
     height: 17px;
     font-size: 14px;
@@ -66,21 +70,12 @@ body{
     text-align:center;
 }
 
-#SignUpHyperLink{
+#signUpHyperLink{
     color: #2563EB;
     font-weight:bold;
 }
 
-#ForgotPassword{
-    text-align:right;
-    font-size: 14px;
-    margin-top:15px;
-    margin-bottom:15px;
-    color:#2563EB;
-    font-weight:bold;
-}
-
-#ErrorMessage{
+#errorMessage{
     font-size: 13px;
     border-radius: 8px;
     background:rgb(249,227,227);
@@ -90,8 +85,9 @@ body{
     text-align:center;
 }
 
+
 @media (max-width: 480px){
-    #loginCardHeader{
+    #SignupCardHeader{
         margin-bottom:40px;
     }
 }

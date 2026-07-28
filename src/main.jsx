@@ -4,9 +4,11 @@ import './index.css'
 import App from './App.jsx'
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import LoginScreen from "./components/LoginScreen.jsx";
+import SignUpScreen from "./components/SignUpScreen.jsx"
 
 const router = createBrowserRouter([
-  {path:"/", element: <LoginScreen />}
+  {path:"/", element: <LoginScreen />},
+  {path:"/SignUp", element: <SignUpScreen />}
 ])
 
 createRoot(document.getElementById('root')).render(
