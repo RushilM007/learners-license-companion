@@ -101,7 +101,8 @@ body{
 
 #AuthGoogleOption{
     text-align:center;
-    padding:20px;
+    width:100%;
+    max-width:360px;
   
 }
 
@@ -112,7 +113,7 @@ body{
     justify-content:center;
     border:solid;
     border-radius:6px;
-    width: 360px;
+    width: 100%
 }
 
 #SignInWithGoogleTag{
