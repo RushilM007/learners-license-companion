@@ -4,6 +4,7 @@ import React, {useState} from 'react'
 import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth, db} from "./firebase"
 import {setDoc, doc } from "firebase/firestore"
+import SignInWithGoogle from "./SignInWithGoogle"
 
 export default function SignUpScreen(){
     const [email, setEmail] = useState('');
@@ -98,6 +99,8 @@ export default function SignUpScreen(){
                     {error!=='' && <p className = "AuthErrorMessage">{error}</p>}
 
                 </form>
+
+                <SignInWithGoogle />
             </div>
         </main>
         </>

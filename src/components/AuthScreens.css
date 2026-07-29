@@ -85,7 +85,7 @@ body{
 }
 
 .AuthDescriptor{
-    margin-bottom:40px;
+    margin-bottom:20px;
     text-align:center;
     font-size:13px;
 }
@@ -99,6 +99,24 @@ body{
     text-align:center;
 }
 
+#AuthGoogleOption{
+    text-align:center;
+  
+}
+
+#BoxInsideGoogleAuth{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:center;
+    border:solid;
+    border-radius:6px;
+    width: 360px;
+}
+
+#SignInWithGoogleTag{
+    margin-left:20px;
+}
 @media (max-width: 480px){
     #SignupCardHeader{
         margin-bottom:40px;
