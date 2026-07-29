@@ -1,12 +1,23 @@
 import React, {useEffect, useState} from "react"
 import { Navigate, useNavigate, Link } from "react-router-dom"
 import './AuthScreens.css'
+import { sendPasswordResetEmail } from "firebase/auth"
+import { auth } from "./firebase"
 export default function ForgotPasswordScreen(){
 
-    const [error, setError] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
+    const [errorExists, setErrorExists] = useState(false)
+    const [email, setEmail] = useState('')
 
-    function resetPassword(){
-
+    async function resetPassword(e){
+        e.preventDefault();
+        try{
+            await sendPasswordResetEmail(auth,email)
+            setErrorMessage('none')
+        } catch (error){
+            setErrorMessage(error.message)
+            setErrorExists(true)
+        }
     }
 
     return(
@@ -25,16 +36,16 @@ export default function ForgotPasswordScreen(){
                         type = "email" 
                     />
 
-                    <button id = "AuthButton" onClick = {resetPassword}>Reset Password</button>
+                    <button className = "AuthButton" onClick = {resetPassword}>Reset Password</button>
 
-                    <p id = "AuthAlternateOptionLiner">Remember your password? <Link to="/" id = "AuthHyperLink">Login</Link></p>
+                    <p className = "AuthAlternateOptionLiner">Remember your password? <Link to="/" className = "AuthHyperLink">Login</Link></p>
 
-                    {error!=='' && <p id = "AuthErrorMessage">{error}</p>}
+                    {errorExists&&<p className ="AuthErrorMessage">{errorMessage}</p>}
+                    {!errorExists&&errorMessage!==''&& <p className ="AuthSuccessMessage">Email Sent Successfully!</p>}
 
                 </form>
             </div>
         </main>
-        
         </>
 
     )

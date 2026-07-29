@@ -91,11 +91,11 @@ export default function SignUpScreen(){
                         type = "password" 
                     />
 
-                    <button id = "AuthButton">Sign Up</button>
+                    <button className = "AuthButton">Sign Up</button>
 
-                    <p id = "AuthAlternateOptionLiner">Have an account? <Link to="/" id = "AuthHyperLink">Login</Link></p>
+                    <p className = "AuthAlternateOptionLiner">Have an account? <Link to="/" className = "AuthHyperLink">Login</Link></p>
 
-                    {error!=='' && <p id = "AuthErrorMessage">{error}</p>}
+                    {error!=='' && <p className = "AuthErrorMessage">{error}</p>}
 
                 </form>
             </div>

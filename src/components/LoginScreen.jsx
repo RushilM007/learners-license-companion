@@ -49,13 +49,13 @@ export default function LoginScreen(){
                         type = "password" 
                     />
 
-                    <Link to="/ForgotPassword" id = "AuthHyperLink">Forgot Password?</Link>
+                    <Link to="/ForgotPassword" className = "AuthHyperLink">Forgot Password?</Link>
 
-                    <button id = "AuthButton" onClick = {onSubmit}>Sign In</button>
+                    <button className = "AuthButton" onClick = {onSubmit}>Sign In</button>
 
-                    <p id = "AuthAlternateOptionLiner">Don't have an account? <Link to="/SignUp" id = "AuthHyperLink">Sign Up</Link></p>
+                    <p className = "AuthAlternateOptionLiner">Don't have an account? <Link to="/SignUp" className = "AuthHyperLink">Sign Up</Link></p>
 
-                    {error!=='' && <p id = "AuthErrorMessage">{error}</p>}
+                    {error!=='' && <p className = "AuthErrorMessage">{error}</p>}
 
                 </form>
             </div>
