@@ -1,12 +1,37 @@
 import React from "react"
 import './AuthScreens.css'
+// import { GoogleAuthProvider } from "firebase/auth/web-extension"
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
+import { auth, db } from "./firebase"
+import { doc, setDoc } from "firebase/firestore";
+import { Navigate, useNavigate } from "react-router-dom";
+
 
 export default function SignInWithGoogle(){
+
+    const navigate = useNavigate();
+
+    function handleGoogleSignIn(){
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).then(async(result)=>{
+            console.log(result)
+            const user = result.user
+            if (result.user){
+                await setDoc(doc(db,"Users",user.uid),{
+                    email:user.email,
+                    name: user.displayName
+                })
+                navigate("/HomeScreen")
+                
+            }
+        })
+
+    }
     return (
         <>
         <div id = "AuthGoogleOption">
             <p className = "AuthDescriptor">--Or continue with --</p>
-            <button id = "BoxInsideGoogleAuth">
+            <button onClick = {handleGoogleSignIn} id = "BoxInsideGoogleAuth">
 
                 <svg xmlns="http://w3.org" viewBox="0 0 24 24" width="32px" height="32px">
                     <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>

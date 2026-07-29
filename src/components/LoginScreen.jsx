@@ -4,6 +4,7 @@ import './AuthScreens.css'
 import {useState} from 'react'
 import {signInWithEmailAndPassword} from "firebase/auth"
 import {auth} from "./firebase"
+import SignInWithGoogle from "./SignInWithGoogle.jsx"
 
 export default function LoginScreen(){
     
@@ -58,6 +59,7 @@ export default function LoginScreen(){
                     {error!=='' && <p className = "AuthErrorMessage">{error}</p>}
 
                 </form>
+                <SignInWithGoogle />
             </div>
         </main>
         </>
