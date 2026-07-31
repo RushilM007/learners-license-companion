@@ -1,6 +1,5 @@
 import React from "react"
 import './AuthScreens.css'
-// import { GoogleAuthProvider } from "firebase/auth/web-extension"
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth, db } from "./firebase"
 import { doc, setDoc } from "firebase/firestore";

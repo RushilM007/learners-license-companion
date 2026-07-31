@@ -6,12 +6,21 @@ import LoginScreen from "./components/LoginScreen.jsx";
 import SignUpScreen from "./components/SignUpScreen.jsx"
 import HomeScreen from "./components/HomeScreen.jsx"
 import ForgotPasswordScreen from "./components/ForgotPasswordScreen.jsx"
+import Questionbank from './components/Questionbank.jsx'
+import Analytics from './components/Analytics.jsx'
+import Chatbot from './components/Chatbot.jsx'
+import MockExam from './components/MockExam.jsx';
 
 const router = createBrowserRouter([
   {path:"/", element: <LoginScreen />},
   {path:"/SignUp", element: <SignUpScreen />},
   {path:"/HomeScreen", element: <HomeScreen />},
-  {path:"/ForgotPassword", element: <ForgotPasswordScreen />}
+  {path:"/ForgotPassword", element: <ForgotPasswordScreen />},
+  {path:"/Questionbank", element: <Questionbank />},
+  {path:"/Analytics", element: <Analytics />},
+  {path:"/Chatbot", element: <Chatbot />},
+  {path:"/MockExam", element: <MockExam />}
+
 ])
 
 createRoot(document.getElementById('root')).render(

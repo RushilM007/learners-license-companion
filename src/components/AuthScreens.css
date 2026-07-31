@@ -24,8 +24,9 @@ body{
     height: 29px;
     width: 100%;
     font-size: 24px;
-    font-weight:bold;
+    font-weight:350;
     text-align:center;
+
 }
 
 .AuthButton{
@@ -37,6 +38,7 @@ body{
     color: #ffffff;
     font-size: 15px;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .AuthLabel{
@@ -72,6 +74,7 @@ body{
     margin-bottom:10px;
     text-align:right;
     font-size:13px;
+    cursor:pointer;
 }
 
 .AuthErrorMessage{
@@ -103,7 +106,6 @@ body{
     text-align:center;
     width:100%;
     max-width:360px;
-  
 }
 
 #BoxInsideGoogleAuth{
@@ -113,7 +115,8 @@ body{
     justify-content:center;
     border:solid;
     border-radius:6px;
-    width: 100%
+    width: 100%;
+    cursor:pointer;
 }
 
 #SignInWithGoogleTag{
