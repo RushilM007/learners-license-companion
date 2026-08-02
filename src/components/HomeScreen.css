@@ -51,8 +51,8 @@ body{
 }
 
 #ModuleGrid{
-    padding:100px;
-    padding-left:200px;
+    padding-left: 250px;
+    padding-top: 150px;
     display:flex;
     flex-wrap:wrap;
 }
@@ -94,6 +94,6 @@ body{
     }
     #ModuleGrid{
         padding: 20px;
-        padding-left:30px;
+        padding-top: 5px;
     }
 }
