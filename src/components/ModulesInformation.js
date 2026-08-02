@@ -1,6 +1,6 @@
 export const ModulesInformation = [
     {
-        name: "Questionbank",
+        name: "Question Bank",
         description: "Practice without having to worry about time constraints",
         image: "../assets/images/icons/pencil.png",
         navigate: "/Questionbank"
