@@ -9,8 +9,8 @@ body{
 }
 
 .HeaderImage{
-    height:52px;
-    width:52px;
+    height:32px;
+    width:32px;
 }
 
 .HomeScreenHeader{
@@ -66,4 +66,28 @@ body{
 
 .ModuleName{
     font-size:24px;
+}
+
+@media (max-width:480px){
+    #HomeScreenHeaderText{
+        font-size:15px;
+    }
+    .HeaderImage{
+        width:26px;
+        height:26px;
+    }
+    .ModuleImage{
+        width:66px;
+        height:66px;
+    }
+    .ModuleName{
+        font-size: 20px;
+    }
+    .ModuleText{
+        font-size:12px;
+    }
+    .ModuleButton{
+        width:273px;
+        height:175px;
+    }
 }

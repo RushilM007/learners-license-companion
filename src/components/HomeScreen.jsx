@@ -56,10 +56,10 @@ export default function HomeScreen(){
             <h1 id = "HomeScreenHeaderText">Learner's License Companion</h1>
 
             <button className = "HeaderButton">
-                <img className = "HeaderImage" src = "../icons/setting.png" alt = "settings icon"  />
+                <img className = "HeaderImage" src = "../assets/images/icons/setting.png" alt = "settings icon"  />
             </button>
             <button onClick = {logout} className = "HeaderButton">
-                <img className = "HeaderImage" src = "../icons/logout.png" alt = "logout icon"/>
+                <img className = "HeaderImage" src = "../assets/images/icons/logout.png" alt = "logout icon"/>
             </button>
 
         </header>
