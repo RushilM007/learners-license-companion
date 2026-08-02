@@ -87,8 +87,8 @@ body{
         font-size:12px;
     }
     .ModuleButton{
-        width:273px;
-        height:175px;
+        max-width:273px;
+        max-height:175px;
         margin-right: 20px;
         margin-left: 20px;
     }
