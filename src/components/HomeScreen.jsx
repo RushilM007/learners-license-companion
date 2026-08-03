@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import "./HomeScreen.css"
 import  {ModulesInformation}  from './ModulesInformation'
+import Header from './Header'
 
 export default function HomeScreen(){
     //Stores all user data 
@@ -51,18 +52,20 @@ export default function HomeScreen(){
     })
 
     return (
-        <>
-        <header className= "HomeScreenHeader">
-            <h1 id = "HomeScreenHeaderText">Learner's License Companion</h1>
+        <>  
+        <header className = "HomeScreenHeader">
 
-            <button className = "HeaderButton">
-                <img className = "HeaderImage" src = "../assets/images/icons/setting.png" alt = "settings icon"  />
-            </button>
-            <button onClick = {logout} className = "HeaderButton">
-                <img className = "HeaderImage" src = "../assets/images/icons/logout.png" alt = "logout icon"/>
-            </button>
-
+            <Header 
+                title = "Learner's License Companion" 
+                imagePathOne = "../public/assets/images/icons/setting.png"
+                altOne = "settings icon"
+                imagePathTwo = "../public/assets/images/icons/logout.png"
+                altTwo = "logout icon"
+                functionTwo = {()=>logout()}
+            />
+            
         </header>
+
         <body>
             <div id = "ModuleGrid">
                 {HomeScreenModuleChips}
