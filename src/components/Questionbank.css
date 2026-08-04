@@ -120,3 +120,28 @@
     cursor:pointer;
     border-width:1px;
 }
+
+#checkMark{
+    width: 55px;
+    height: 55px;
+}
+
+#xMark{
+    height: 50px;
+    width: 50px;
+}
+
+#displayRightAndWrongCount{
+    margin-top:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+#rightCount{
+    margin-right: 30px;
+}
+
+#wrongCount{
+    margin-left:5px;
+}

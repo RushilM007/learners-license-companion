@@ -6,10 +6,21 @@ import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
 import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
+import { useNavigate } from "react-router-dom"
 
 export default function Questionbank(){
 
     const [currentQuestionNumber, updateQuestionNumber] = useState();
+
+    useEffect(()=>{
+        setQuestionNumberInFirstRender()
+    },[])
+
+    useEffect(()=>{
+        storeLastSeenQuestionNumberInDB()
+    },[currentQuestionNumber])
+
+    const navigate = useNavigate()
 
     const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
 
@@ -33,20 +44,12 @@ export default function Questionbank(){
         })
     }
 
-    useEffect(()=>{
-        storeLastSeenQuestionNumberInDB()
-    },[])
+    function displayByCategory(){
 
-    useEffect(()=>{
-        fetchUserData()
-    },[currentQuestionNumber])
-
-    function decrementQuestionNumber(){
-        updateQuestionNumber(prev=>prev-1);
     }
 
-    function incrementQuestionNumber(){
-        updateQuestionNumber(prev=>prev+1)
+    function resetPage(){
+        
     }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
@@ -78,6 +81,7 @@ export default function Questionbank(){
                 title = "Question Bank"
                 imagePathOne = "../public/assets/images/icons/home.png"
                 altOne = "go to home screen image"
+                functionOne = {()=>navigate("/HomeScreen")}
             />
         </header>
 
@@ -104,11 +108,18 @@ export default function Questionbank(){
 
                 <div className = "NavigateQuestionsBox">
                  
-                    {currentQuestionNumber>1 && <button onClick = {decrementQuestionNumber} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                    {currentQuestionNumber>1 && <button onClick = {()=>updateQuestionNumber(prev=>prev-1)} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
                     
-                    {currentQuestionNumber < Questions.length && <button onClick = {incrementQuestionNumber} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                    {currentQuestionNumber < Questions.length && <button onClick = {()=>updateQuestionNumber(prev=>prev+1)} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
                    
                 </div>
+
+            </section>
+            <section id = "displayRightAndWrongCount">
+                <img id = "checkMark" src = "../public/assets/images/icons/check.png" alt = "check mark " />
+                <p id = "rightCount">100</p>
+                <img id = "xMark" src = "../public/assets/images/icons/remove.png" alt = "x mark" />
+                <p id = "wrongCount">7</p>
 
             </section>
         </>
