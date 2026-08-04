@@ -3,11 +3,21 @@ import "./HomeScreen.css"
 import "./Questionbank.css"
 import React, {useState} from "react"
 import Questions from "./Questions.js"
+import {auth,db} from "./firebase"
+import {doc, getDoc} from "firebase/firestore"
 
 export default function Questionbank(){
-    const [currentQuestionNumber, updateQuestionNumber] = useState(9)
+    const [currentQuestionNumber, updateQuestionNumber] = useState(1)
 
     const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber)
+
+    function decrementQuestionNumber(){
+        updateQuestionNumber(prev=>prev-1)
+    }
+
+    function incrementQuestionNumber(){
+        updateQuestionNumber(prev=>prev+1)
+    }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
         const displayOptions = question.options.map((option)=>{
@@ -55,7 +65,7 @@ export default function Questionbank(){
                 </button>
 
                
-                <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of 100</p></div>
+                <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
 
             </section>
 
@@ -64,8 +74,11 @@ export default function Questionbank(){
                 {displayCurrentQuestion}
 
                 <div className = "NavigateQuestionsBox">
-                    <img id = "NavigateQuestionsLeft" className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/>
-                    <img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" />
+                 
+                    {currentQuestionNumber>1 && <button onClick = {decrementQuestionNumber} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                    
+                    {currentQuestionNumber < Questions.length && <button onClick = {incrementQuestionNumber} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                   
                 </div>
 
             </section>
