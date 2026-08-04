@@ -21,7 +21,7 @@ export default function SignInWithGoogle(){
                     name: user.displayName
                 })
                 navigate("/HomeScreen")
-                
+
             }
         })
 

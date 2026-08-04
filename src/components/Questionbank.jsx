@@ -1,18 +1,48 @@
 import Header from "./Header"
 import "./HomeScreen.css"
 import "./Questionbank.css"
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import Questions from "./Questions.js"
-import {auth,db} from "./firebase"
-import {doc, getDoc} from "firebase/firestore"
+import {auth, db} from "./firebase.js"
+import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
+import { onAuthStateChanged } from "firebase/auth"
 
 export default function Questionbank(){
-    const [currentQuestionNumber, updateQuestionNumber] = useState(1)
 
-    const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber)
+    const [currentQuestionNumber, updateQuestionNumber] = useState();
+
+    const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
+
+    function storeLastSeenQuestionNumberInDB(){
+        auth.onAuthStateChanged((user)=>{
+            const docRef=doc(db,"Users", user.uid)
+            const data = {
+                LastSeenThisQuestion: currentQuestionNumber
+            }
+            updateDoc(docRef,data)
+        })
+    };
+
+    async function setQuestionNumberInFirstRender(){
+        auth.onAuthStateChanged(async(user)=>{
+            const docRef = doc(db,'Users', user.uid)
+            const docSnap = await getDoc(docRef)
+            if (docSnap.exists()){
+                updateQuestionNumber(docSnap.data().LastSeenThisQuestion)
+            }
+        })
+    }
+
+    useEffect(()=>{
+        storeLastSeenQuestionNumberInDB()
+    },[])
+
+    useEffect(()=>{
+        fetchUserData()
+    },[currentQuestionNumber])
 
     function decrementQuestionNumber(){
-        updateQuestionNumber(prev=>prev-1)
+        updateQuestionNumber(prev=>prev-1);
     }
 
     function incrementQuestionNumber(){
@@ -50,7 +80,6 @@ export default function Questionbank(){
                 altOne = "go to home screen image"
             />
         </header>
-        <body>
 
             <section id = "ControlPanelBelowHeader">
                 <select name = "category" id = "DropDownForCategory">
@@ -82,9 +111,6 @@ export default function Questionbank(){
                 </div>
 
             </section>
-
-
-        </body>
         </>
     )
 }
