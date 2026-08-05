@@ -13,35 +13,60 @@ export default function Questionbank(){
     const [currentQuestionNumber, updateQuestionNumber] = useState();
 
     useEffect(()=>{
-        setQuestionNumberInFirstRender()
+        setQuestionNumberInFirstRender();
     },[])
 
     useEffect(()=>{
-        storeLastSeenQuestionNumberInDB()
+        storeLastSeenQuestionNumberInDB();
     },[currentQuestionNumber])
 
-    const navigate = useNavigate()
+    useEffect(()=>{
+        document.addEventListener('keydown', detectKeyDown, true);
+    },[])
+
+    const detectKeyDown = (e) =>{
+        if (e.key === 'ArrowRight'){
+            updateQuestionNumber(prev=>prev+1);
+        }
+        if (e.key === 'ArrowLeft'){
+            updateQuestionNumber(prev=>prev-1);
+        }
+
+    }
+
+    const navigate = useNavigate();
 
     const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
 
     function storeLastSeenQuestionNumberInDB(){
         auth.onAuthStateChanged((user)=>{
-            const docRef=doc(db,"Users", user.uid)
+            const docRef=doc(db,"Users", user.uid);
             const data = {
                 LastSeenThisQuestion: currentQuestionNumber
             }
-            updateDoc(docRef,data)
+            updateDoc(docRef,data);
         })
     };
 
     async function setQuestionNumberInFirstRender(){
         auth.onAuthStateChanged(async(user)=>{
-            const docRef = doc(db,'Users', user.uid)
-            const docSnap = await getDoc(docRef)
+            const docRef = doc(db,'Users', user.uid);
+            const docSnap = await getDoc(docRef);
             if (docSnap.exists()){
-                updateQuestionNumber(docSnap.data().LastSeenThisQuestion)
+                updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
             }
         })
+    }
+
+    function moveLeft(e){
+        let key = e.key;
+        if (key == "ArrowRight"){
+            updateQuestionNumber(prev=>prev-1);
+        } else {
+            updateQuestionNumber(prev=>prev-1);
+        }
+
+
     }
 
     function displayByCategory(){
@@ -49,7 +74,7 @@ export default function Questionbank(){
     }
 
     function resetPage(){
-        
+
     }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
