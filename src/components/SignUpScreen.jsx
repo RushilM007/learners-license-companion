@@ -33,7 +33,9 @@ export default function SignUpScreen(){
             if (user){
                 await setDoc(doc(db,"Users",user.uid),{
                     email:user.email,
-                    name: name
+                    name: name,
+                    LastSeenThisQuestion: 1,
+                    QuestionProgress = []
                 })
                 
             }

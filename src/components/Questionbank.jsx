@@ -11,39 +11,75 @@ import { useNavigate } from "react-router-dom"
 export default function Questionbank(){
 
     const refCurrentQuestionNumber = useRef(null)
+    const refDropDownCategory = useRef(null)
 
     const [currentQuestionNumber, updateQuestionNumber] = useState();
+    const [displayCategoryError, updateDisplayCategoryError] = useState(false)
 
     useEffect(()=>{
-        setQuestionNumberInFirstRender();
+        ReloadDataInDB();
     },[])
 
     useEffect(()=>{
-        storeLastSeenQuestionNumberInDB();
+        storeDataInDB();
     },[currentQuestionNumber])
 
     useEffect(()=>{
         document.addEventListener('keydown', detectKeyDown, true);
     },[])
 
+    const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
+    const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs");
+    const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
+    const GDPQuestions = Questions.filter((question)=>question.category==="General Driving Principles")
+
+    function moveRight(){
+        if (refDropDownCategory.current==="Category: Road Signs"){
+            if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current < RoadSignQuestions[RoadSignQuestions.length-1].id){
+                updateQuestionNumber(prev=>prev+1)
+            }
+        } else if (refDropDownCategory.current==="Category: Rules of the Road"){
+            if (refCurrentQuestionNumber.current >= RoadRulesQuestions[0].id && refCurrentQuestionNumber.current < RoadRulesQuestions[RoadRulesQuestions.length-1].id)
+            updateQuestionNumber(prev=>prev+1)
+        } else if (refDropDownCategory.current==="Category: General Driving Principles"){
+            if (refCurrentQuestionNumber.current >= GDPQuestions[0].id && refCurrentQuestionNumber.current < GDPQuestions[GDPQuestions.length-1].id){
+                updateQuestionNumber(prev=>prev+1)
+            }
+        } else {
+            updateQuestionNumber(prev=>prev+1)
+        }
+    }
+
+    function moveLeft(){
+        console.log(RoadSignQuestions[0].id)
+        if (refDropDownCategory.current==="Category: Road Signs"){
+            if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
+                updateQuestionNumber(prev=>prev-1)
+            }
+        } else if (refDropDownCategory.current==="Category: Rules of the Road"){
+            if (refCurrentQuestionNumber.current > RoadRulesQuestions[0].id && refCurrentQuestionNumber.current < RoadRulesQuestions[RoadRulesQuestions.length-1].id)
+            updateQuestionNumber(prev=>prev-1)
+        } else if (refDropDownCategory.current==="Category: General Driving Principles"){
+            if (refCurrentQuestionNumber.current > GDPQuestions[0].id && refCurrentQuestionNumber.current < GDPQuestions[GDPQuestions.length-1].id){
+                updateQuestionNumber(prev=>prev-1)
+            }
+        } else {
+            updateQuestionNumber(prev=>prev-1)
+        }
+    }
+
     const detectKeyDown = (e) =>{
         if (e.key === 'ArrowRight'){
-            if (refCurrentQuestionNumber.current < Questions.length){
-                updateQuestionNumber(prev=>prev+1);
-            }
+            moveRight()
         }
         if (e.key === 'ArrowLeft'){
-            if (refCurrentQuestionNumber.current >1){
-            updateQuestionNumber(prev=>prev-1);
-        }
+            moveLeft()
         }
     }
 
     const navigate = useNavigate();
 
-    const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
-
-    function storeLastSeenQuestionNumberInDB(){
+    function storeDataInDB(){
         auth.onAuthStateChanged((user)=>{
             const docRef=doc(db,"Users", user.uid);
             const data = {
@@ -54,7 +90,7 @@ export default function Questionbank(){
         })
     };
 
-    async function setQuestionNumberInFirstRender(){
+    async function ReloadDataInDB(){
         auth.onAuthStateChanged(async(user)=>{
             const docRef = doc(db,'Users', user.uid);
             const docSnap = await getDoc(docRef);
@@ -65,22 +101,64 @@ export default function Questionbank(){
     }
 
     function jumpToQuestion(e){
-        if (e.target.valueAsNumber > 0 && e.target.valueAsNumber<Questions.length+1){
-            updateQuestionNumber(e.target.valueAsNumber)
+        //it should only be within the bound of the category 
+        if (refDropDownCategory.current === "Category: Road Signs"){
+            if (e.target.valueAsNumber >= RoadSignQuestions[0].id && e.target.valueAsNumber <= RoadSignQuestions[RoadSignQuestions.length-1].id){
+                updateDisplayCategoryError(false)
+                updateQuestionNumber(e.target.valueAsNumber)
+            } else {
+                updateDisplayCategoryError(true)
+            }
+        }  
+
+        if (refDropDownCategory.current === "Category: Rules of the Road"){
+            if (e.target.valueAsNumber >= RoadRulesQuestions[0].id && e.target.valueAsNumber <= RoadRulesQuestions[RoadRulesQuestions.length-1].id){
+                updateDisplayCategoryError(false)
+                updateQuestionNumber(e.target.valueAsNumber)
+            } else {
+                updateDisplayCategoryError(true)
+            }
         }
+
+        if (refDropDownCategory.current === "Category: General Driving Principles"){
+            if (e.target.valueAsNumber >= GDPQuestions[0].id && e.target.valueAsNumber <= GDPQuestions[GDPQuestions.length-1].id){
+                updateDisplayCategoryError(false)
+                updateQuestionNumber(e.target.valueAsNumber)
+            } else {
+                updateDisplayCategoryError(true)
+            }
+        } 
+        
+        if (refDropDownCategory.current === "Category: All"){
+            if (e.target.valueAsNumber >= Questions[0].id && e.target.valueAsNumber <= Questions[Questions.length-1].id){
+                updateDisplayCategoryError(false)
+                updateQuestionNumber(e.target.valueAsNumber)
+            } else {
+                updateDisplayCategoryError(true)
+            }
+        } 
     }
 
     function changeCategory(e){
+        refDropDownCategory.current = e.target.value
         console.log(e.target.value)
         if (e.target.value === "Category: Road Signs"){
-            const firstRoadSignQuestion = Questions.filter((question)=>question.category==="Road Signs")
-            updateQuestionNumber(firstRoadSignQuestion[0].id)
+            const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs")
+            updateQuestionNumber(RoadSignQuestions[0].id)
+            document.getElementById('DropDownForCategory').blur()
+            console.log(document.getElementById('DropDownForCategory').value==="Category: Road Signs")
+
         } else if (e.target.value === "Category: Rules of the Road"){
-            const firstRoadRulesQuestion = Questions.filter((question)=>question.category==="Rules of the Road")
-            updateQuestionNumber(firstRoadRulesQuestion[0].id)
+            const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
+            updateQuestionNumber(RoadRulesQuestions[0].id)
+            document.getElementById('DropDownForCategory').blur()
+
+
         } else if (e.target.value === "Category: General Driving Principles"){
-            const firstGDPQuestion = Questions.filter((question)=>question.category==="General Driving Principles")
-            updateQuestionNumber(firstGDPQuestion[0].id)
+            const GDPQuestions = Questions.filter((question)=>question.category==="General Driving Principles")
+            updateQuestionNumber(GDPQuestions[0].id)
+            document.getElementById('DropDownForCategory').blur()
+
         }
     }
 
@@ -141,14 +219,15 @@ export default function Questionbank(){
 
                     <div className = "NavigateQuestionsBox">
                     
-                        {currentQuestionNumber>1 && <button onClick = {()=>updateQuestionNumber(prev=>prev-1)} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                        {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
                         
-                        {currentQuestionNumber < Questions.length && <button onClick = {()=>updateQuestionNumber(prev=>prev+1)} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                        {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
                     
                     </div>
                 </section>
                 <section id = "jumpToQuestionBox">
                     <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
+                    {displayCategoryError && <p>Out of Bounds of Category.</p>}
                 </section>
             </section>
 

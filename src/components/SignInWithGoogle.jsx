@@ -2,7 +2,7 @@ import React from "react"
 import './AuthScreens.css'
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth, db } from "./firebase"
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router-dom";
 
 
@@ -13,15 +13,19 @@ export default function SignInWithGoogle(){
     function handleGoogleSignIn(){
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider).then(async(result)=>{
-            console.log(result)
             const user = result.user
-            if (result.user){
-                await setDoc(doc(db,"Users",user.uid),{
+            const docRef = doc(db,"Users",user.uid)
+            const docSnap = await getDoc(docRef)
+            if (docSnap.exists()){
+                navigate("/HomeScreen")
+            } else {
+                await setDoc(doc(db,"Users", user.uid),{
                     email:user.email,
-                    name: user.displayName
+                    name:user.displayName,
+                    LastSeenThisQuestion: 1,
+                    QuestionProgress = []
                 })
                 navigate("/HomeScreen")
-
             }
         })
 
