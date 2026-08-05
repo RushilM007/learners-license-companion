@@ -4,7 +4,7 @@ import "./Questionbank.css"
 import React, {useState, useEffect, useRef} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
-import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
+import {doc, getDoc, updateDoc, setDoc, arrayUnion} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { useNavigate } from "react-router-dom"
 
@@ -167,10 +167,40 @@ export default function Questionbank(){
     }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
-        const displayOptions = question.options.map((option)=>{
+
+        // if question has already been answered then change render style ig??
+
+    
+        //store in Db 
+        // need to use dict and not array 
+
+        let correctYesOrNo; 
+
+        function handleClickingAnswer(index){
+
+            auth.onAuthStateChanged((user)=>{
+                console.log("hi")
+            const docRef=doc(db,"Users", user.uid);
+            const data = {
+                QuestionProgress: arrayUnion("hi")
+            }
+            refCurrentQuestionNumber.current = currentQuestionNumber;
+            updateDoc(docRef,data);
+        })
+
+            if (question.correctAnswerIndex === index){
+                console.log("yay!")
+            }
+
+
+
+
+        }
+
+        const displayOptions = question.options.map((option, index)=>{
             return (
                 <>
-                <button className = "Answer">{option}</button>
+                <button key = {index} onClick = {()=>handleClickingAnswer(index)} className = "Answer">{option}</button>
                 </>
             )
         })
