@@ -1,7 +1,7 @@
 import Header from "./Header"
 import "./HomeScreen.css"
 import "./Questionbank.css"
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useRef} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
 import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
@@ -9,6 +9,8 @@ import { onAuthStateChanged } from "firebase/auth"
 import { useNavigate } from "react-router-dom"
 
 export default function Questionbank(){
+
+    const refCurrentQuestionNumber = useRef(null)
 
     const [currentQuestionNumber, updateQuestionNumber] = useState();
 
@@ -26,12 +28,15 @@ export default function Questionbank(){
 
     const detectKeyDown = (e) =>{
         if (e.key === 'ArrowRight'){
-            updateQuestionNumber(prev=>prev+1);
+            if (refCurrentQuestionNumber.current < Questions.length){
+                updateQuestionNumber(prev=>prev+1);
+            }
         }
         if (e.key === 'ArrowLeft'){
+            if (refCurrentQuestionNumber.current >1){
             updateQuestionNumber(prev=>prev-1);
         }
-
+        }
     }
 
     const navigate = useNavigate();
@@ -44,6 +49,7 @@ export default function Questionbank(){
             const data = {
                 LastSeenThisQuestion: currentQuestionNumber
             }
+            refCurrentQuestionNumber.current = currentQuestionNumber;
             updateDoc(docRef,data);
         })
     };
@@ -58,23 +64,24 @@ export default function Questionbank(){
         })
     }
 
-    function moveLeft(e){
-        let key = e.key;
-        if (key == "ArrowRight"){
-            updateQuestionNumber(prev=>prev-1);
-        } else {
-            updateQuestionNumber(prev=>prev-1);
+    function jumpToQuestion(e){
+        if (e.target.valueAsNumber > 0 && e.target.valueAsNumber<Questions.length+1){
+            updateQuestionNumber(e.target.valueAsNumber)
         }
-
-
     }
 
-    function displayByCategory(){
-
-    }
-
-    function resetPage(){
-
+    function changeCategory(e){
+        console.log(e.target.value)
+        if (e.target.value === "Category: Road Signs"){
+            const firstRoadSignQuestion = Questions.filter((question)=>question.category==="Road Signs")
+            updateQuestionNumber(firstRoadSignQuestion[0].id)
+        } else if (e.target.value === "Category: Rules of the Road"){
+            const firstRoadRulesQuestion = Questions.filter((question)=>question.category==="Rules of the Road")
+            updateQuestionNumber(firstRoadRulesQuestion[0].id)
+        } else if (e.target.value === "Category: General Driving Principles"){
+            const firstGDPQuestion = Questions.filter((question)=>question.category==="General Driving Principles")
+            updateQuestionNumber(firstGDPQuestion[0].id)
+        }
     }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
@@ -111,7 +118,7 @@ export default function Questionbank(){
         </header>
 
             <section id = "ControlPanelBelowHeader">
-                <select name = "category" id = "DropDownForCategory">
+                <select name = "category" id = "DropDownForCategory" onChange = {changeCategory}>
                     <option>Category: All</option>
                     <option>Category: Road Signs</option>
                     <option>Category: Rules of the Road</option>
@@ -127,19 +134,24 @@ export default function Questionbank(){
 
             </section>
 
-            <section className = "QuestionBox">
+            <section id ="QuestionBoxAndJumpQuestion">
+                <section className = "QuestionBox">
 
-                {displayCurrentQuestion}
+                    {displayCurrentQuestion}
 
-                <div className = "NavigateQuestionsBox">
-                 
-                    {currentQuestionNumber>1 && <button onClick = {()=>updateQuestionNumber(prev=>prev-1)} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                    <div className = "NavigateQuestionsBox">
                     
-                    {currentQuestionNumber < Questions.length && <button onClick = {()=>updateQuestionNumber(prev=>prev+1)} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
-                   
-                </div>
-
+                        {currentQuestionNumber>1 && <button onClick = {()=>updateQuestionNumber(prev=>prev-1)} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                        
+                        {currentQuestionNumber < Questions.length && <button onClick = {()=>updateQuestionNumber(prev=>prev+1)} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                    
+                    </div>
+                </section>
+                <section id = "jumpToQuestionBox">
+                    <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
+                </section>
             </section>
+
             <section id = "displayRightAndWrongCount">
                 <img id = "checkMark" src = "../public/assets/images/icons/check.png" alt = "check mark " />
                 <p id = "rightCount">100</p>
