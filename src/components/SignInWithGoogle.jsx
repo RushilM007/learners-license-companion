@@ -23,7 +23,8 @@ export default function SignInWithGoogle(){
                     email:user.email,
                     name:user.displayName,
                     LastSeenThisQuestion: 1,
-                    QuestionProgress = []
+                    QuestionProgress: [],
+                    LastSeenCategory: "Category: All"
                 })
                 navigate("/HomeScreen")
             }

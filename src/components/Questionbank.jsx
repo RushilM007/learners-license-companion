@@ -83,7 +83,8 @@ export default function Questionbank(){
         auth.onAuthStateChanged((user)=>{
             const docRef=doc(db,"Users", user.uid);
             const data = {
-                LastSeenThisQuestion: currentQuestionNumber
+                LastSeenThisQuestion: currentQuestionNumber,
+                LastSeenCategory: refDropDownCategory.current
             }
             refCurrentQuestionNumber.current = currentQuestionNumber;
             updateDoc(docRef,data);
@@ -96,6 +97,9 @@ export default function Questionbank(){
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()){
                 updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
+                refDropDownCategory.current = docSnap.data().LastSeenCategory;
+                console.log(refDropDownCategory)
+                document.getElementById('DropDownForCategory').value = refDropDownCategory.current
             }
         })
     }
@@ -227,7 +231,7 @@ export default function Questionbank(){
                 </section>
                 <section id = "jumpToQuestionBox">
                     <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
-                    {displayCategoryError && <p>Out of Bounds of Category.</p>}
+                    {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
                 </section>
             </section>
 

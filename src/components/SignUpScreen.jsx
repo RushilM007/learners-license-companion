@@ -35,9 +35,9 @@ export default function SignUpScreen(){
                     email:user.email,
                     name: name,
                     LastSeenThisQuestion: 1,
-                    QuestionProgress = []
+                    QuestionProgress: [],
+                    LastSeenCategory: "Category: All"
                 })
-                
             }
             } catch (error){
                 setError(`Firebase Error [${error.code}]: ${error.message}`);

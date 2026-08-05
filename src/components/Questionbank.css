@@ -176,3 +176,10 @@
 #jumpToQuestionText{
 text-align: center;
 }
+
+#outOfBoundsErrorMessage{
+    text-align:center;
+    margin-top:20px;
+    color:red;
+    font-size: 13px;
+}
