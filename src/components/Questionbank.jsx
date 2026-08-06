@@ -4,7 +4,7 @@ import "./Questionbank.css"
 import React, {useState, useEffect, useRef} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
-import {doc, getDoc, updateDoc, setDoc, arrayUnion} from "firebase/firestore"
+import {doc, getDoc, updateDoc, setDoc, arrayUnion, query, where, collection, collectionGroup, getDocs} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { useNavigate } from "react-router-dom"
 
@@ -15,6 +15,7 @@ export default function Questionbank(){
 
     const [currentQuestionNumber, updateQuestionNumber] = useState();
     const [displayCategoryError, updateDisplayCategoryError] = useState(false)
+    const [answers, updateAnswers] = useState({})
 
     useEffect(()=>{
         ReloadDataInDB();
@@ -27,6 +28,10 @@ export default function Questionbank(){
     useEffect(()=>{
         document.addEventListener('keydown', detectKeyDown, true);
     },[])
+
+    useEffect(()=>{
+        storeAnswers()
+    }, [answers])
 
     const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
     const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs");
@@ -94,14 +99,28 @@ export default function Questionbank(){
     async function ReloadDataInDB(){
         auth.onAuthStateChanged(async(user)=>{
             const docRef = doc(db,'Users', user.uid);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()){
-                updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
-                refDropDownCategory.current = docSnap.data().LastSeenCategory;
-                console.log(refDropDownCategory)
-                document.getElementById('DropDownForCategory').value = refDropDownCategory.current
+            updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
+            refDropDownCategory.current = docSnap.data().LastSeenCategory;
+            console.log(refDropDownCategory)
+            document.getElementById('DropDownForCategory').value = refDropDownCategory.current
+            updateAnswers(docSnap.data().answers)
+        })
+    }
+
+    function storeAnswers(){
+
+        auth.onAuthStateChanged(async(user)=>{
+        const docRef = doc(db,'Users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()){
+            const data = {
+                answers: answers
+            }
+            updateDoc(docRef,data)
             }
         })
+
+        
     }
 
     function jumpToQuestion(e){
@@ -168,37 +187,24 @@ export default function Questionbank(){
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
-
-        // if question has already been answered then render differently, disabled components, if it hasnt been answered then 
-        // make the buttons clickable and then disable after clicking. store in a dict in the DB 
-
-        function handleClickingAnswer(index){
-
-            auth.onAuthStateChanged((user)=>{
-                console.log("hi")
-            const docRef=doc(db,"Users", user.uid);
-            const data = {
-                QuestionProgress: arrayUnion("hi")
+        function handleClickingAnswer(question, index){
+            if (answers[question.id]!==0){
+                console.log(answers)
+                return;
             }
-            refCurrentQuestionNumber.current = currentQuestionNumber;
-            updateDoc(docRef,data);
-        })
-
-            if (question.correctAnswerIndex === index){
-                console.log("yay!")
-            }
-
-
-
-
+            updateAnswers({
+                ...answers,
+                [question.id]: index
+            })
         }
 
         const displayOptions = question.options.map((option, index)=>{
             return (
                 <>
-                <button key = {index} onClick = {()=>handleClickingAnswer(index)} className = "Answer">{option}</button>
+                <button id = {index} key = {index} onClick = {()=>handleClickingAnswer(question, index)} className = "Answer">{option}</button>
                 </>
             )
+            //className should be based on if answeered or not from answers dict. 
         })
         
         return (

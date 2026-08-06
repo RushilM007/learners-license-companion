@@ -5,6 +5,7 @@ import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth, db} from "./firebase"
 import {setDoc, doc } from "firebase/firestore"
 import SignInWithGoogle from "./SignInWithGoogle"
+import Questions from "./Questions"
 
 export default function SignUpScreen(){
     const [email, setEmail] = useState('');
@@ -14,6 +15,11 @@ export default function SignUpScreen(){
     const [name, setName] = useState('');
 
     const navigate = useNavigate();
+
+    let answers = {}
+    for (let i = 1; i < Questions.length+1; i ++){
+        answers[i] = 0
+    }
 
     async function handleRegister(e){
         e.preventDefault();
@@ -30,13 +36,14 @@ export default function SignUpScreen(){
         try{
             await createUserWithEmailAndPassword(auth,email,confirmPassword);
             const user = auth.currentUser;
+            
             if (user){
                 await setDoc(doc(db,"Users",user.uid),{
                     email:user.email,
                     name: name,
                     LastSeenThisQuestion: 1,
-                    QuestionProgress: [],
-                    LastSeenCategory: "Category: All"
+                    LastSeenCategory: "Category: All",
+                    answers: answers
                 })
             }
             } catch (error){

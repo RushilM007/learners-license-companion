@@ -2,11 +2,17 @@ import React from "react"
 import './AuthScreens.css'
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth, db } from "./firebase"
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router-dom";
+import Questions from "./Questions";
 
 
 export default function SignInWithGoogle(){
+
+    let answers = {}
+    for (let i = 1; i < Questions.length+1; i ++){
+            answers[i] = 0
+        }
 
     const navigate = useNavigate();
 
@@ -23,8 +29,8 @@ export default function SignInWithGoogle(){
                     email:user.email,
                     name:user.displayName,
                     LastSeenThisQuestion: 1,
-                    QuestionProgress: [],
-                    LastSeenCategory: "Category: All"
+                    LastSeenCategory: "Category: All",
+                    answers: answers
                 })
                 navigate("/HomeScreen")
             }
