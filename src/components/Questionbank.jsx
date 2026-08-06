@@ -168,13 +168,9 @@ export default function Questionbank(){
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
-        // if question has already been answered then change render style ig??
 
-    
-        //store in Db 
-        // need to use dict and not array 
-
-        let correctYesOrNo; 
+        // if question has already been answered then render differently, disabled components, if it hasnt been answered then 
+        // make the buttons clickable and then disable after clicking. store in a dict in the DB 
 
         function handleClickingAnswer(index){
 
