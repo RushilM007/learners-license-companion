@@ -4,14 +4,14 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth, db } from "./firebase"
 import { doc, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router-dom";
-import Questions from "./Questions";
+import Questions from "./Questions.js";
 
 
 export default function SignInWithGoogle(){
 
     let answers = {}
     for (let i = 1; i < Questions.length+1; i ++){
-            answers[i] = 0
+            answers[i] = null
         }
 
     const navigate = useNavigate();
@@ -30,7 +30,10 @@ export default function SignInWithGoogle(){
                     name:user.displayName,
                     LastSeenThisQuestion: 1,
                     LastSeenCategory: "Category: All",
-                    answers: answers
+                    answers: answers,
+                    rightAnswerCount: 0,
+                    wrongAnswerCount: 0
+
                 })
                 navigate("/HomeScreen")
             }

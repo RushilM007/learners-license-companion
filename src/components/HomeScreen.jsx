@@ -15,7 +15,7 @@ export default function HomeScreen(){
     const navigate = useNavigate()
 
     function logout(){
-        signOut(auth)
+        auth.signOut
         navigate("/")
     }
 
@@ -48,11 +48,9 @@ export default function HomeScreen(){
             
         </header>
 
-        <body>
-            <div id = "ModuleGrid">
-                {HomeScreenModuleChips}
-            </div>
-        </body>
+        <div id = "ModuleGrid">
+            {HomeScreenModuleChips}
+        </div>
         </>
     )
 }

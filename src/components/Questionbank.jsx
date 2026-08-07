@@ -4,9 +4,10 @@ import "./Questionbank.css"
 import React, {useState, useEffect, useRef} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
-import {doc, getDoc, updateDoc, setDoc, arrayUnion, query, where, collection, collectionGroup, getDocs} from "firebase/firestore"
+import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { useNavigate } from "react-router-dom"
+import {clsx} from 'clsx'
 
 export default function Questionbank(){
 
@@ -16,9 +17,18 @@ export default function Questionbank(){
     const [currentQuestionNumber, updateQuestionNumber] = useState();
     const [displayCategoryError, updateDisplayCategoryError] = useState(false)
     const [answers, updateAnswers] = useState({})
+    const [rightAnswerCount, updateRightAnswerCount] = useState()
+    const [wrongAnswerCount, updateWrongAnswerCount] = useState()
+    const [dataLoaded, setDataLoaded] = useState(false)
 
     useEffect(()=>{
-        ReloadDataInDB();
+        const unsub = onAuthStateChanged(auth, (user)=>{
+            if (user){
+                setDataLoaded(false)
+                ReloadDataInDB();
+            }
+        })
+        return () => unsub()
     },[])
 
     useEffect(()=>{
@@ -38,6 +48,33 @@ export default function Questionbank(){
     const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
     const GDPQuestions = Questions.filter((question)=>question.category==="General Driving Principles")
 
+    let answersEmptyDict = {}
+        for (let i = 1; i < Questions.length+1; i ++){
+                answersEmptyDict[i] = null
+            }
+    
+
+    async function resetAllProgress(){
+        const user = auth.currentUser
+        const docRef=doc(db,"Users", user.uid);
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()){
+            const data = {
+            LastSeenThisQuestion: 1,
+            LastSeenCategory: "Category: All",
+            rightAnswerCount: 0,
+            wrongAnswerCount: 0,
+            answers: answersEmptyDict
+            }
+            // refCurrentQuestionNumber.current = currentQuestionNumber;
+            updateDoc(docRef,data);
+        }
+        
+        window.location.reload()
+
+
+    }
+
     function moveRight(){
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current < RoadSignQuestions[RoadSignQuestions.length-1].id){
@@ -56,7 +93,6 @@ export default function Questionbank(){
     }
 
     function moveLeft(){
-        console.log(RoadSignQuestions[0].id)
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
@@ -84,43 +120,55 @@ export default function Questionbank(){
 
     const navigate = useNavigate();
 
-    function storeDataInDB(){
-        auth.onAuthStateChanged((user)=>{
-            const docRef=doc(db,"Users", user.uid);
+    async function storeDataInDB(){
+        if (!dataLoaded) return;
+        const user = auth.currentUser
+        if (!user) return
+
+        const docRef=doc(db,"Users", user.uid);
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()){
             const data = {
-                LastSeenThisQuestion: currentQuestionNumber,
-                LastSeenCategory: refDropDownCategory.current
+            LastSeenThisQuestion: currentQuestionNumber,
+            LastSeenCategory: refDropDownCategory.current
             }
             refCurrentQuestionNumber.current = currentQuestionNumber;
             updateDoc(docRef,data);
-        })
+        }
     };
 
+    //answers state is updated with the answers dict in db. 
     async function ReloadDataInDB(){
-        auth.onAuthStateChanged(async(user)=>{
-            const docRef = doc(db,'Users', user.uid);
-            updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
-            refDropDownCategory.current = docSnap.data().LastSeenCategory;
-            console.log(refDropDownCategory)
-            document.getElementById('DropDownForCategory').value = refDropDownCategory.current
-            updateAnswers(docSnap.data().answers)
-        })
-    }
-
-    function storeAnswers(){
-
-        auth.onAuthStateChanged(async(user)=>{
+        const user = auth.currentUser
+        if (!user) return;
         const docRef = doc(db,'Users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()){
+            updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
+            refDropDownCategory.current = docSnap.data().LastSeenCategory;
+            document.getElementById('DropDownForCategory').value = refDropDownCategory.current
+            console.log(docSnap.data().answers)
+            updateAnswers(docSnap.data().answers)
+            updateRightAnswerCount(docSnap.data().rightAnswerCount)
+            updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
+            console.log(answers)
+        }
+        setDataLoaded(true)
+        
+    }
+
+    function storeAnswers(){ // count here 
+            if (!dataLoaded) return;
+            const user = auth.currentUser;
+            console.log(user)
+            if (!user) return;
+            const docRef = doc(db,'Users', user.uid);
             const data = {
-                answers: answers
+                answers: answers,
+                wrongAnswerCount: wrongAnswerCount,
+                rightAnswerCount: rightAnswerCount
             }
             updateDoc(docRef,data)
-            }
-        })
-
-        
     }
 
     function jumpToQuestion(e){
@@ -164,12 +212,10 @@ export default function Questionbank(){
 
     function changeCategory(e){
         refDropDownCategory.current = e.target.value
-        console.log(e.target.value)
         if (e.target.value === "Category: Road Signs"){
             const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs")
             updateQuestionNumber(RoadSignQuestions[0].id)
             document.getElementById('DropDownForCategory').blur()
-            console.log(document.getElementById('DropDownForCategory').value==="Category: Road Signs")
 
         } else if (e.target.value === "Category: Rules of the Road"){
             const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
@@ -188,23 +234,40 @@ export default function Questionbank(){
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
         function handleClickingAnswer(question, index){
-            if (answers[question.id]!==0){
-                console.log(answers)
+            if (answers[question.id]!=null){
                 return;
             }
             updateAnswers({
                 ...answers,
                 [question.id]: index
             })
+
+            if (question.correctAnswerIndex===index){
+                updateRightAnswerCount(prev=>prev+1)
+            } else {
+                updateWrongAnswerCount(prev=>prev+1)
+            }
         }
 
         const displayOptions = question.options.map((option, index)=>{
             return (
                 <>
-                <button id = {index} key = {index} onClick = {()=>handleClickingAnswer(question, index)} className = "Answer">{option}</button>
+                <button id = {index} key = {index} onClick = {()=>handleClickingAnswer(question, index)} 
+                className = {
+                    clsx({
+                        "Answer":answers[question.id]===null || (answers[question.id]!=null && index!=question.correctAnswerIndex || index!=answers[question.id]) ,
+
+                        //question is answered and 
+                        "rightAnswer":(answers[question.id]!=null && index===question.correctAnswerIndex),
+
+                        //if option is the user's answer and answer is incorrect
+                        "wrongAnswer": (answers[question.id]!= question.correctAnswerIndex && index===answers[question.id])
+
+                    })
+                }
+                >{option}</button>
                 </>
             )
-            //className should be based on if answeered or not from answers dict. 
         })
         
         return (
@@ -239,7 +302,7 @@ export default function Questionbank(){
                     <option>Category: General Driving Principles</option>
                 </select>
 
-                <button className = "refreshButton">
+                <button onClick = {resetAllProgress} className = "refreshButton">
                     <img className = "refreshImage" src = "../public/assets/images/icons/refresh.png" alt = "refresh button" />
                 </button>
 
@@ -269,9 +332,9 @@ export default function Questionbank(){
 
             <section id = "displayRightAndWrongCount">
                 <img id = "checkMark" src = "../public/assets/images/icons/check.png" alt = "check mark " />
-                <p id = "rightCount">100</p>
+                <p id = "rightCount">{rightAnswerCount}</p>
                 <img id = "xMark" src = "../public/assets/images/icons/remove.png" alt = "x mark" />
-                <p id = "wrongCount">7</p>
+                <p id = "wrongCount">{wrongAnswerCount}</p>
 
             </section>
         </>
