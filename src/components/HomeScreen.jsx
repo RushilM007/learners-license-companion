@@ -39,9 +39,9 @@ export default function HomeScreen(){
 
             <Header 
                 title = "Learner's License Companion" 
-                imagePathOne = "../public/assets/images/icons/setting.png"
+                imagePathOne = "..assets/images/icons/setting.png"
                 altOne = "settings icon"
-                imagePathTwo = "../public/assets/images/icons/logout.png"
+                imagePathTwo = "..assets/images/icons/logout.png"
                 altTwo = "logout icon"
                 functionTwo = {()=>logout()}
             />

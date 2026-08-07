@@ -288,7 +288,7 @@ export default function Questionbank(){
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
-                imagePathOne = "../public/assets/images/icons/home.png"
+                imagePathOne = "..assets/images/icons/home.png"
                 altOne = "go to home screen image"
                 functionOne = {()=>navigate("/HomeScreen")}
             />
@@ -303,7 +303,7 @@ export default function Questionbank(){
                 </select>
 
                 <button onClick = {resetAllProgress} className = "refreshButton">
-                    <img className = "refreshImage" src = "../public/assets/images/icons/refresh.png" alt = "refresh button" />
+                    <img className = "refreshImage" src = "..assets/images/icons/refresh.png" alt = "refresh button" />
                 </button>
 
                
@@ -331,9 +331,9 @@ export default function Questionbank(){
             </section>
 
             <section id = "displayRightAndWrongCount">
-                <img id = "checkMark" src = "../public/assets/images/icons/check.png" alt = "check mark " />
+                <img id = "checkMark" src = "..assets/images/icons/check.png" alt = "check mark " />
                 <p id = "rightCount">{rightAnswerCount}</p>
-                <img id = "xMark" src = "../public/assets/images/icons/remove.png" alt = "x mark" />
+                <img id = "xMark" src = "..assets/images/icons/remove.png" alt = "x mark" />
                 <p id = "wrongCount">{wrongAnswerCount}</p>
 
             </section>
