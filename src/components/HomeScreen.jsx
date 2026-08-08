@@ -15,21 +15,20 @@ export default function HomeScreen(){
     const navigate = useNavigate()
 
     function logout(){
-        auth.signOut
+        auth.signOut()
+
         navigate("/")
     }
 
     const HomeScreenModuleChips = ModulesInformation.map((module, index)=>{
         return (
-            <>
-            <button key = {index} className = "ModuleButton" onClick = {()=>navigate(module.navigate)}>
-                <img className = "ModuleImage" src = {module.image} />
+            <button key = {module.navigate} className = "ModuleButton" onClick = {()=>navigate(module.navigate)}>
+                <img key = {module.image} className = "ModuleImage" src = {module.image} />
                 <div className = "ModuleText">
-                    <p className = "ModuleName">{module.name}</p>
-                    <p className = "ModuleDescription">{module.description}</p>
+                    <p key = {module.name} className = "ModuleName">{module.name}</p>
+                    <p key = {module.description} className = "ModuleDescription">{module.description}</p>
                 </div>
             </button>
-            </>
         )
     })
 
@@ -39,9 +38,9 @@ export default function HomeScreen(){
 
             <Header 
                 title = "Learner's License Companion" 
-                imagePathOne = "..assets/images/icons/setting.png"
+                imagePathOne = "../assets/images/icons/setting.png"
                 altOne = "settings icon"
-                imagePathTwo = "..assets/images/icons/logout.png"
+                imagePathTwo = "../assets/images/icons/logout.png"
                 altTwo = "logout icon"
                 functionTwo = {()=>logout()}
             />

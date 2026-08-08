@@ -27,12 +27,11 @@ export default function SignUpScreen(){
             setError("Please fill up the missing fields.")
             return;
         }
-
         if (password!==confirmPassword){
             setError("Password hasn't been confirmed properly.")
             return;
         }
-       
+        
         try{
             await createUserWithEmailAndPassword(auth,email,confirmPassword);
             const user = auth.currentUser;

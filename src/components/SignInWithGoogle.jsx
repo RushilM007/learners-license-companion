@@ -6,7 +6,6 @@ import { doc, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router-dom";
 import Questions from "./Questions.js";
 
-
 export default function SignInWithGoogle(){
 
     let answers = {}
@@ -18,6 +17,7 @@ export default function SignInWithGoogle(){
 
     function handleGoogleSignIn(){
         const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({prompt: 'select_account'})
         signInWithPopup(auth, provider).then(async(result)=>{
             const user = result.user
             const docRef = doc(db,"Users",user.uid)
@@ -54,7 +54,6 @@ export default function SignInWithGoogle(){
                 </svg>
 
                 <p id = "SignInWithGoogleTag">Sign In With Google</p>
-
 
             </button>
 

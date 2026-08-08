@@ -21,6 +21,8 @@ export default function Questionbank(){
     const [wrongAnswerCount, updateWrongAnswerCount] = useState()
     const [dataLoaded, setDataLoaded] = useState(false)
 
+    const navigate = useNavigate();
+
     useEffect(()=>{
         const unsub = onAuthStateChanged(auth, (user)=>{
             if (user){
@@ -32,7 +34,7 @@ export default function Questionbank(){
     },[])
 
     useEffect(()=>{
-        storeDataInDB();
+        storeLastSeenQuestionAndCategory();
     },[currentQuestionNumber])
 
     useEffect(()=>{
@@ -40,9 +42,10 @@ export default function Questionbank(){
     },[])
 
     useEffect(()=>{
-        storeAnswers()
+        storeAnswersAndRightWrongCount()
     }, [answers])
 
+    //maybe use useMemo here. 
     const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
     const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs");
     const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
@@ -52,7 +55,7 @@ export default function Questionbank(){
         for (let i = 1; i < Questions.length+1; i ++){
                 answersEmptyDict[i] = null
             }
-    
+    //till here 
 
     async function resetAllProgress(){
         const user = auth.currentUser
@@ -66,13 +69,9 @@ export default function Questionbank(){
             wrongAnswerCount: 0,
             answers: answersEmptyDict
             }
-            // refCurrentQuestionNumber.current = currentQuestionNumber;
             updateDoc(docRef,data);
         }
-        
         window.location.reload()
-
-
     }
 
     function moveRight(){
@@ -109,7 +108,8 @@ export default function Questionbank(){
         }
     }
 
-    const detectKeyDown = (e) =>{
+    //detect if left or right arrow keys were pressed and then navigate questions accordingly. 
+    function detectKeyDown(e){
         if (e.key === 'ArrowRight'){
             moveRight()
         }
@@ -118,12 +118,11 @@ export default function Questionbank(){
         }
     }
 
-    const navigate = useNavigate();
-
-    async function storeDataInDB(){
+    // this function should run every time the question number or category changes. 
+    async function storeLastSeenQuestionAndCategory(){
         if (!dataLoaded) return;
-        const user = auth.currentUser
-        if (!user) return
+        const user = auth.currentUser;
+        if (!user) return;
 
         const docRef=doc(db,"Users", user.uid);
         const docSnap = await getDoc(docRef)
@@ -137,7 +136,7 @@ export default function Questionbank(){
         }
     };
 
-    //answers state is updated with the answers dict in db. 
+    //when user comes back to the question bank module, this should reload. 
     async function ReloadDataInDB(){
         const user = auth.currentUser
         if (!user) return;
@@ -147,20 +146,18 @@ export default function Questionbank(){
             updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
             refDropDownCategory.current = docSnap.data().LastSeenCategory;
             document.getElementById('DropDownForCategory').value = refDropDownCategory.current
-            console.log(docSnap.data().answers)
             updateAnswers(docSnap.data().answers)
             updateRightAnswerCount(docSnap.data().rightAnswerCount)
             updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
-            console.log(answers)
         }
         setDataLoaded(true)
         
     }
 
-    function storeAnswers(){ // count here 
+    // everytime the user clicks an answer, this should change. 
+    function storeAnswersAndRightWrongCount(){ 
             if (!dataLoaded) return;
             const user = auth.currentUser;
-            console.log(user)
             if (!user) return;
             const docRef = doc(db,'Users', user.uid);
             const data = {
@@ -171,6 +168,8 @@ export default function Questionbank(){
             updateDoc(docRef,data)
     }
 
+    //when the user enters a question to jump to, this function enables displaying that question. 
+    //itll happen only if the question the user entered is within the category of questions that they selected. 
     function jumpToQuestion(e){
         //it should only be within the bound of the category 
         if (refDropDownCategory.current === "Category: Road Signs"){
@@ -210,6 +209,7 @@ export default function Questionbank(){
         } 
     }
 
+    //change the set of questions displayed to the user when they select a different category. 
     function changeCategory(e){
         refDropDownCategory.current = e.target.value
         if (e.target.value === "Category: Road Signs"){
@@ -234,14 +234,18 @@ export default function Questionbank(){
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
         function handleClickingAnswer(question, index){
+            //if question has already been answered do not take a new answer
             if (answers[question.id]!=null){
                 return;
             }
+
+            // If question hasn't been answered before, add user's selected answer to the answers dict. 
             updateAnswers({
                 ...answers,
                 [question.id]: index
             })
 
+            //update right answer count if user answer was correct, otherwise update wrong answer count 
             if (question.correctAnswerIndex===index){
                 updateRightAnswerCount(prev=>prev+1)
             } else {
@@ -251,8 +255,7 @@ export default function Questionbank(){
 
         const displayOptions = question.options.map((option, index)=>{
             return (
-                <>
-                <button id = {index} key = {index} onClick = {()=>handleClickingAnswer(question, index)} 
+                <button id = {index} key = {option} onClick = {()=>handleClickingAnswer(question, index)} 
                 className = {
                     clsx({
                         "Answer":answers[question.id]===null || (answers[question.id]!=null && index!=question.correctAnswerIndex || index!=answers[question.id]) ,
@@ -266,20 +269,19 @@ export default function Questionbank(){
                     })
                 }
                 >{option}</button>
-                </>
             )
         })
         
         return (
-            <>
-            <p className = "Question">{question.question}</p>
+            <section key = {1}>
+            <p key = {question.question} className = "Question">{question.question}</p>
 
-            {question.image!==null && <img className = "QuestionImage" src = {question.image} alt = "image, part of question" />}
+            {question.image!==null && <img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" />}
 
             <div className = "AnswersBox">
                 {displayOptions}
             </div>
-            </>
+            </section>
         )
     })
 
@@ -288,55 +290,58 @@ export default function Questionbank(){
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
-                imagePathOne = "..assets/images/icons/home.png"
+                imagePathOne = "../assets/images/icons/home.png"
                 altOne = "go to home screen image"
                 functionOne = {()=>navigate("/HomeScreen")}
             />
         </header>
 
-            <section id = "ControlPanelBelowHeader">
-                <select name = "category" id = "DropDownForCategory" onChange = {changeCategory}>
-                    <option>Category: All</option>
-                    <option>Category: Road Signs</option>
-                    <option>Category: Rules of the Road</option>
-                    <option>Category: General Driving Principles</option>
-                </select>
+        <section id = "ControlPanelBelowHeader">
+            <select name = "category" id = "DropDownForCategory" onChange = {changeCategory}>
+                <option>Category: All</option>
+                <option>Category: Road Signs</option>
+                <option>Category: Rules of the Road</option>
+                <option>Category: General Driving Principles</option>
+            </select>
 
-                <button onClick = {resetAllProgress} className = "refreshButton">
-                    <img className = "refreshImage" src = "..assets/images/icons/refresh.png" alt = "refresh button" />
-                </button>
+            <button onClick = {resetAllProgress} className = "refreshButton">
+                <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
+            </button>
 
-               
-                <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
+            <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
 
-            </section>
+        </section>
 
-            <section id ="QuestionBoxAndJumpQuestion">
-                <section className = "QuestionBox">
+        <section id ="QuestionBoxAndJumpQuestion">
 
-                    {displayCurrentQuestion}
+            <section className = "QuestionBox">
 
-                    <div className = "NavigateQuestionsBox">
+                {displayCurrentQuestion}
+
+                <div className = "NavigateQuestionsBox">
+                
+                    {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
                     
-                        {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
-                        
-                        {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../public/assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
-                    
-                    </div>
-                </section>
-                <section id = "jumpToQuestionBox">
-                    <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
-                    {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
-                </section>
+                    {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                
+                </div>
             </section>
 
-            <section id = "displayRightAndWrongCount">
-                <img id = "checkMark" src = "..assets/images/icons/check.png" alt = "check mark " />
-                <p id = "rightCount">{rightAnswerCount}</p>
-                <img id = "xMark" src = "..assets/images/icons/remove.png" alt = "x mark" />
-                <p id = "wrongCount">{wrongAnswerCount}</p>
-
+            <section id = "jumpToQuestionBox">
+                <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
+                {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
             </section>
+
+        </section>
+
+        <section id = "displayRightAndWrongCount">
+
+            <img id = "checkMark" src = "../assets/images/icons/check.png" alt = "check mark " />
+            <p id = "rightCount">{rightAnswerCount}</p>
+            <img id = "xMark" src = "../assets/images/icons/remove.png" alt = "x mark" />
+            <p id = "wrongCount">{wrongAnswerCount}</p>
+
+        </section>
         </>
     )
 }
