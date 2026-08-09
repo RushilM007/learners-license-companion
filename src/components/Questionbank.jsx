@@ -1,7 +1,7 @@
 import Header from "./Header"
 import "./HomeScreen.css"
 import "./Questionbank.css"
-import React, {useState, useEffect, useRef} from "react"
+import React, {useState, useEffect, useRef, memo, useMemo} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
 import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
@@ -45,23 +45,29 @@ export default function Questionbank(){
         storeAnswersAndRightWrongCount()
     }, [answers])
 
-    //maybe use useMemo here. 
-    const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber);
-    const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs");
-    const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
-    const GDPQuestions = Questions.filter((question)=>question.category==="General Driving Principles")
+    const answersEmptyDict = useMemo(()=>{
+        let answersEmptyDict1 = {};
+        for (let i = 1; i < Questions.length+1; i++){
+            answersEmptyDict1[i] = null;
+        }
+        return answersEmptyDict1
+    },[])
 
-    let answersEmptyDict = {}
-        for (let i = 1; i < Questions.length+1; i ++){
-                answersEmptyDict[i] = null
-            }
-    //till here 
+
+    const currentQuestion = useMemo(() => {return Questions.filter((question)=>question.id===currentQuestionNumber)} , [moveLeft, moveRight]);
+    const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
+    const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
+    const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
+
+    // let answersEmptyDict = {}
+    //     for (let i = 1; i < Questions.length+1; i ++){
+    //             answersEmptyDict[i] = null
+    //         }
 
     async function resetAllProgress(){
         const user = auth.currentUser
         const docRef=doc(db,"Users", user.uid);
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()){
+        // reset all variables
             const data = {
             LastSeenThisQuestion: 1,
             LastSeenCategory: "Category: All",
@@ -70,7 +76,6 @@ export default function Questionbank(){
             answers: answersEmptyDict
             }
             updateDoc(docRef,data);
-        }
         window.location.reload()
     }
 
