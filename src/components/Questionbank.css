@@ -164,10 +164,7 @@
     width:200px;
 }
 
-#jumpToQuestionText{
-text-align: center;
 
-}
 
 #outOfBoundsErrorMessage{
     text-align:center;
@@ -246,7 +243,6 @@ text-align: center;
         margin-right:10px;
         width: 359px;
         height:460px;
-        margin-left:0px;
         margin-top:10px;
         font-size:15px;
     }
