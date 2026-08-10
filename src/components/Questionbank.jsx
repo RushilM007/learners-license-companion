@@ -294,6 +294,7 @@ export default function Questionbank(){
                 <option>Category: Road Signs</option>
                 <option>Category: Rules of the Road</option>
                 <option>Category: General Driving Principles</option>
+                <option>Category: Bookmarks</option>
             </select>
 
             <button onClick = {resetAllProgress} className = "refreshButton">
