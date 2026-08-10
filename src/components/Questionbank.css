@@ -247,7 +247,7 @@ text-align: center;
         margin-left:10px;
         margin-right:10px;
         width: 359px;
-        height:616px;
+        height:500px;
         margin-left:0px;
         margin-top:5px;
         font-size:15px;
@@ -255,7 +255,7 @@ text-align: center;
     .QuestionImage{
         height:86px;
         width: 86px;
-        margin-left: 20px;
+        margin-left: 60px;
     }
     .Answer{
         font-size:12px;
