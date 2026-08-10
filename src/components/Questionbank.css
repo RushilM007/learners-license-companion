@@ -244,7 +244,7 @@ text-align: center;
         width: 25px
     }
     .QuestionBox{
-        padding: 5px;
+        padding: 13px;
         width: 359px;
         height:616px;
         margin-left:0px;
@@ -261,7 +261,7 @@ text-align: center;
         margin-right:100px;
     }
     .NavigateQuestionsBox{
-        margin-top:100px;
+        margin-top:210px;
     }
    
 }
