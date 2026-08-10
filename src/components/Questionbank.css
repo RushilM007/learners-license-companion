@@ -194,7 +194,7 @@
         font-size:16px;
     }
     .refreshButton{
-        margin-left:2px;
+        margin-left:5px;
         height:31px;
         width:56px;
 
@@ -218,7 +218,7 @@
         margin-bottom:5px;
     }
     #jumpToQuestionText{
-        font-size: 15px;
+        font-size: 12px;
     }
     #jumpToQuestionInput{
         width: 25px
