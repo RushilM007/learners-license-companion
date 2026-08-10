@@ -211,3 +211,9 @@ text-align: center;
     gap:20px;
     cursor:pointer;
 }
+
+.popup{
+    position:fixed;
+    background-color: black/50;
+    
+}

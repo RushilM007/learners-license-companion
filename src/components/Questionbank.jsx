@@ -54,7 +54,6 @@ export default function Questionbank(){
     },[])
 
     const currentQuestion = useMemo(() => {return Questions.filter((question)=>question.id===currentQuestionNumber)} , [moveLeft, moveRight]);
-    // const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber)
     const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
     const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
     const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
@@ -94,7 +93,7 @@ export default function Questionbank(){
 
     function moveLeft(){
         if (refDropDownCategory.current==="Category: Road Signs"){
-            if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
+            if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
             }
         } else if (refDropDownCategory.current==="Category: Rules of the Road"){
@@ -105,12 +104,12 @@ export default function Questionbank(){
                 updateQuestionNumber(prev=>prev-1)
             }
         } else {
+            if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[RoadSignQuestions.length-1].id){
             updateQuestionNumber(prev=>prev-1)
+            }
         }
     }
 
-    //detect if left or right arrow keys were pressed and then navigate questions accordingly. 
-    //probably add a cooldown timer?
     function detectKeyDown(e){
         if (e.key === 'ArrowRight'){
             moveRight()
@@ -120,7 +119,6 @@ export default function Questionbank(){
         }
     }
 
-    // this function should run every time the question number or category changes. 
     async function storeLastSeenQuestionAndCategory(){
         if (!dataLoaded) return;
         const user = auth.currentUser;
@@ -136,7 +134,6 @@ export default function Questionbank(){
         updateDoc(docRef,data);
     };
 
-    //when user comes back to the question bank module, this should reload. 
     async function ReloadDataInDB(){
         const user = auth.currentUser
         if (!user) return;
@@ -153,7 +150,6 @@ export default function Questionbank(){
         
     }
 
-    // everytime the user clicks an answer, this should change. 
     function storeAnswersAndRightWrongCount(){ 
             if (!dataLoaded) return;
             const user = auth.currentUser;
@@ -167,8 +163,6 @@ export default function Questionbank(){
             updateDoc(docRef,data)
     }
 
-    //when the user enters a question to jump to, this function enables displaying that question. 
-    //itll happen only if the question the user entered is within the category of questions that they selected. 
     function jumpToQuestion(e){
         //it should only be within the bound of the category 
         if (refDropDownCategory.current === "Category: Road Signs"){
@@ -208,7 +202,6 @@ export default function Questionbank(){
         } 
     }
 
-    //change the set of questions displayed to the user when they select a different category. 
     function changeCategory(e){
         refDropDownCategory.current = e.target.value
         if (e.target.value === "Category: Road Signs"){
@@ -229,6 +222,17 @@ export default function Questionbank(){
 
         }
     }
+    
+    function handleResetPopup(){
+        return (
+            <>
+            <section>
+                <button>ResetProgress</button>
+            </section>
+            </>
+        )
+    }
+
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
@@ -286,6 +290,7 @@ export default function Questionbank(){
 
     return(
         <>
+
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
@@ -303,14 +308,14 @@ export default function Questionbank(){
                 <option>Category: General Driving Principles</option>
             </select>
 
-            <button onClick = {resetAllProgress} className = "refreshButton">
+            <button onClick = {()=>setShowModal(true)} className = "refreshButton">
                 <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
             </button>
 
             <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
 
         </section>
-
+      
         <section id ="QuestionBoxAndJumpQuestion">
 
             <section className = "QuestionBox">
