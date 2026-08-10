@@ -242,14 +242,12 @@
     .Answer{
         font-size:12px;
     }
-    #NavigateQuestionsLeft{
-        margin-right:190px;
-    }
-    .NavigateQuestionsBox{
-        margin-top:460px;
-    }
     .NavigateButtonsContainer{
         gap: 150px;
+    }
+    #ControlPanelBelowHeader{
+        margin-bottom:5px;
+        margin-top: 5px;
     }
 }
 
