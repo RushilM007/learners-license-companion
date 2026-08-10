@@ -204,11 +204,6 @@ text-align: center;
     cursor:pointer;
 }
 
-.popup{
-    position:fixed;
-    background-color: black/50;
-}
-
 @media (max-width: 480px){
     #DropDownForCategory{
         width:270px;
@@ -232,10 +227,13 @@ text-align: center;
         margin-top:5px;
         margin-right: 2px;
         margin-left:1px;
+        margin-bottom:5px;
     }
     #jumpToQuestionBox{
         width:183px;
         height:26px;
+        margin-top:5px;
+        margin-bottom:5px;
     }
     #jumpToQuestionText{
         font-size: 15px;
@@ -247,7 +245,7 @@ text-align: center;
         margin-left:10px;
         margin-right:10px;
         width: 359px;
-        height:400px;
+        height:460px;
         margin-left:0px;
         margin-top:10px;
         font-size:15px;
