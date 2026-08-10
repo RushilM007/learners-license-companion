@@ -224,7 +224,6 @@
         margin-top:5px;
         margin-right: 2px;
         margin-left:1px;
-        margin-bottom:5px;
     }
     #jumpToQuestionBox{
         width:183px;
@@ -241,7 +240,7 @@
     .QuestionBox{
         margin-left:10px;
         margin-right:10px;
-        width: 359px;
+        width: 340px;
         height:460px;
         margin-top:10px;
         font-size:15px;
