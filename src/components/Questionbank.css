@@ -210,7 +210,7 @@ text-align: center;
 
 @media (max-width: 480px){
     #DropDownForCategory{
-        width:298px;
+        width:270px;
         height:31px;
         font-size:16px;
     }
@@ -223,6 +223,16 @@ text-align: center;
     .refreshImage{
         width: 16px;
         height:16px;
+    }
+    .currentQuestionNumberBox{
+        width: 164px;
+        height:26px;
+        font-size:15px;
+    }
+    #jumpToQuestionBox{
+        width:191px;
+        height:26px;
+        
     }
 }
 
