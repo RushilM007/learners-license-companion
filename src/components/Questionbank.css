@@ -249,6 +249,17 @@
         margin-bottom:5px;
         margin-top: 5px;
     }
+    #RightAndWrongCountContainer{
+        margin-top:5px;
+    }
+    #checkMark{
+        width: 30px;
+        height: 35px;
+    }
+    #xMark{
+        width: 30px;
+        height: 35px;
+    }
 }
 
 
