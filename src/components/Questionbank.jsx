@@ -61,6 +61,7 @@ export default function Questionbank(){
     async function resetAllProgress(){
         const user = auth.currentUser
         const docRef=doc(db,"Users", user.uid);
+        const docSnap = await getDoc(docRef)
 
         const data = {
         LastSeenThisQuestion: 1,
@@ -97,10 +98,10 @@ export default function Questionbank(){
                 updateQuestionNumber(prev=>prev-1)
             }
         } else if (refDropDownCategory.current==="Category: Rules of the Road"){
-            if (refCurrentQuestionNumber.current > RoadRulesQuestions[0].id && refCurrentQuestionNumber.current < RoadRulesQuestions[RoadRulesQuestions.length-1].id)
+            if (refCurrentQuestionNumber.current > RoadRulesQuestions[0].id && refCurrentQuestionNumber.current <= RoadRulesQuestions[RoadRulesQuestions.length-1].id)
             updateQuestionNumber(prev=>prev-1)
         } else if (refDropDownCategory.current==="Category: General Driving Principles"){
-            if (refCurrentQuestionNumber.current > GDPQuestions[0].id && refCurrentQuestionNumber.current < GDPQuestions[GDPQuestions.length-1].id){
+            if (refCurrentQuestionNumber.current > GDPQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[GDPQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
             }
         } else {
@@ -122,7 +123,6 @@ export default function Questionbank(){
     async function storeLastSeenQuestionAndCategory(){
         if (!dataLoaded) return;
         const user = auth.currentUser;
-        if (!user) return;
         const docRef=doc(db,"Users", user.uid);
 
         const data = {
@@ -290,7 +290,6 @@ export default function Questionbank(){
 
     return(
         <>
-
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
@@ -308,11 +307,16 @@ export default function Questionbank(){
                 <option>Category: General Driving Principles</option>
             </select>
 
-            <button onClick = {()=>setShowModal(true)} className = "refreshButton">
+            <button onClick = {resetAllProgress} className = "refreshButton">
                 <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
             </button>
 
             <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
+
+            <section id = "jumpToQuestionBox">
+                <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
+                {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
+            </section>
 
         </section>
       
@@ -331,10 +335,7 @@ export default function Questionbank(){
                 </div>
             </section>
 
-            <section id = "jumpToQuestionBox">
-                <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
-                {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
-            </section>
+            
 
         </section>
 
