@@ -148,10 +148,6 @@
     margin-left:5px;
 }
 
-#QuestionBoxAndJumpQuestion{
-    display:flex;
-    flex-direction:row;
-}
 
 #jumpToQuestionInput{
     width:40px;
@@ -212,6 +208,9 @@ text-align: center;
 }
 
 @media (max-width: 480px){
+    *{
+        padding: 10x
+    }
     #DropDownForCategory{
         width:298px;
         height:31px;

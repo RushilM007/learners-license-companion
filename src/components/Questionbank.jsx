@@ -320,23 +320,18 @@ export default function Questionbank(){
 
         </section>
       
-        <section id ="QuestionBoxAndJumpQuestion">
+        <section className = "QuestionBox">
 
-            <section className = "QuestionBox">
+            {displayCurrentQuestion}
 
-                {displayCurrentQuestion}
-
-                <div className = "NavigateQuestionsBox">
-                
-                    {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
-                    
-                    {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
-                
-                </div>
-            </section>
-
+            <div className = "NavigateQuestionsBox">
             
-
+                {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                
+                {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+            
+            </div>
+         
         </section>
 
         <section id = "displayRightAndWrongCount">
