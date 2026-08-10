@@ -248,6 +248,17 @@ text-align: center;
         width: 359px;
         height:616px;
     }
+    .QuestionImage{
+        height:86px;
+        width: 86px
+    }
+    .Answer{
+        font-size:12px;
+    }
+    #NavigateQuestionsLeft{
+        margin-right:300px;
+
+    }
    
 }
 
