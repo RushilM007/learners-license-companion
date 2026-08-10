@@ -219,7 +219,7 @@
     }
     .currentQuestionNumberBox{
         width: 144px;
-        height:26px;
+        min-height:26px;
         font-size:12px;
         margin-top:5px;
         margin-right: 2px;
