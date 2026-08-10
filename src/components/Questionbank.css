@@ -218,7 +218,14 @@ text-align: center;
         font-size:16px;
     }
     .refreshButton{
-        margin-left:50px;
+        margin-left:5px;
+        height:31px;
+        width:56px;
+
+    }
+    .refreshImage{
+        width: 16px;
+        height:16px;
     }
 }
 
