@@ -248,5 +248,9 @@
     .NavigateQuestionsBox{
         margin-top:460px;
     }
+    .NavigateButtonsContainer{
+        gap: 100px;
+    }
 }
+
 
