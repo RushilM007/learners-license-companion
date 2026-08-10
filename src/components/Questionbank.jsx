@@ -222,17 +222,6 @@ export default function Questionbank(){
 
         }
     }
-    
-    function handleResetPopup(){
-        return (
-            <>
-            <section>
-                <button>ResetProgress</button>
-            </section>
-            </>
-        )
-    }
-
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
@@ -279,7 +268,7 @@ export default function Questionbank(){
             <section key = {1}>
             <p key = {question.question} className = "Question">{question.question}</p>
 
-            {question.image!==null && <img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" />}
+            {question.image!==null && <div id = "image2"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
 
             <div className = "AnswersBox">
                 {displayOptions}
@@ -311,9 +300,9 @@ export default function Questionbank(){
                 <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
             </button>
 
-            <div className = "currentQuestionNumberBox"><p className = "CurrentQuestionNumber">Question: {currentQuestionNumber} of {Questions.length}</p></div>
+            <div className = "currentQuestionNumberContainer"><p className = "CurrentQuestionNumberText">Question: {currentQuestionNumber} of {Questions.length}</p></div>
 
-            <section id = "jumpToQuestionBox">
+            <section id = "JumpToQuestionContainer">
                 <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
                 {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
             </section>
@@ -324,22 +313,22 @@ export default function Questionbank(){
 
             {displayCurrentQuestion}
 
-            <div className = "NavigateQuestionsBox">
+            <div className = "NavigateButtonsContainer">
             
-                {currentQuestionNumber>1 && <button onClick = {moveLeft} id = "NavigateQuestionsLeft"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
+                {currentQuestionNumber>1 && <button onClick = {moveLeft} className = "NavigateButton"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
                 
-                {currentQuestionNumber < Questions.length && <button onClick = {moveRight} id = "NavigateQuestionsRight"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
+                {currentQuestionNumber < Questions.length && <button onClick = {moveRight} className = "NavigateButton"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
             
             </div>
-         
+
         </section>
 
-        <section id = "displayRightAndWrongCount">
+        <section id = "RightAndWrongCountContainer">
 
             <img id = "checkMark" src = "../assets/images/icons/check.png" alt = "check mark " />
-            <p id = "rightCount">{rightAnswerCount}</p>
+            <p>{rightAnswerCount}</p>
             <img id = "xMark" src = "../assets/images/icons/remove.png" alt = "x mark" />
-            <p id = "wrongCount">{wrongAnswerCount}</p>
+            <p>{wrongAnswerCount}</p>
 
         </section>
         </>
