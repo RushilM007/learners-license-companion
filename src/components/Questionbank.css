@@ -240,8 +240,14 @@ text-align: center;
     #jumpToQuestionText{
         font-size: 15px;
     }
-    #jumpToQuestioninput{
+    #jumpToQuestionInput{
         width: 25px
     }
+    .QuestionBox{
+        margin-left:5px;
+        width: 359px;
+        height:616px;
+    }
+   
 }
 
