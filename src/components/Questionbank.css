@@ -240,5 +240,8 @@ text-align: center;
     #jumpToQuestionText{
         font-size: 15px;
     }
+    #jumpToQuestioninput{
+        width: 25px
+    }
 }
 
