@@ -166,6 +166,7 @@
 
 #jumpToQuestionText{
 text-align: center;
+
 }
 
 #outOfBoundsErrorMessage{
@@ -228,11 +229,14 @@ text-align: center;
         width: 164px;
         height:26px;
         font-size:15px;
+        margin-top:50x;
     }
     #jumpToQuestionBox{
         width:191px;
         height:26px;
-        
+    }
+    #jumpToQuestionText{
+        font-size: 15px;
     }
 }
 
