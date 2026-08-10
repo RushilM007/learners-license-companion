@@ -249,7 +249,7 @@ text-align: center;
         width: 359px;
         height:400px;
         margin-left:0px;
-        margin-top:5px;
+        margin-top:10px;
         font-size:15px;
     }
     .QuestionImage{
@@ -266,6 +266,5 @@ text-align: center;
     .NavigateQuestionsBox{
         margin-top:460px;
     }
-   
 }
 
