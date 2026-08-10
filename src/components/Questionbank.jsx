@@ -1,7 +1,7 @@
 import Header from "./Header"
 import "./HomeScreen.css"
 import "./Questionbank.css"
-import React, {useState, useEffect, useRef, memo, useMemo} from "react"
+import React, {useState, useEffect, useRef,useMemo} from "react"
 import Questions from "./Questions.js"
 import {auth, db} from "./firebase.js"
 import {doc, getDoc, updateDoc, setDoc} from "firebase/firestore"
@@ -53,29 +53,25 @@ export default function Questionbank(){
         return answersEmptyDict1
     },[])
 
-
     const currentQuestion = useMemo(() => {return Questions.filter((question)=>question.id===currentQuestionNumber)} , [moveLeft, moveRight]);
+    // const currentQuestion = Questions.filter((question)=>question.id===currentQuestionNumber)
     const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
     const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
     const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
 
-    // let answersEmptyDict = {}
-    //     for (let i = 1; i < Questions.length+1; i ++){
-    //             answersEmptyDict[i] = null
-    //         }
-
     async function resetAllProgress(){
         const user = auth.currentUser
         const docRef=doc(db,"Users", user.uid);
-        // reset all variables
-            const data = {
-            LastSeenThisQuestion: 1,
-            LastSeenCategory: "Category: All",
-            rightAnswerCount: 0,
-            wrongAnswerCount: 0,
-            answers: answersEmptyDict
-            }
-            updateDoc(docRef,data);
+
+        const data = {
+        LastSeenThisQuestion: 1,
+        LastSeenCategory: "Category: All",
+        rightAnswerCount: 0,
+        wrongAnswerCount: 0,
+        answers: answersEmptyDict
+        }
+        updateDoc(docRef,data);
+
         window.location.reload()
     }
 
@@ -114,6 +110,7 @@ export default function Questionbank(){
     }
 
     //detect if left or right arrow keys were pressed and then navigate questions accordingly. 
+    //probably add a cooldown timer?
     function detectKeyDown(e){
         if (e.key === 'ArrowRight'){
             moveRight()
@@ -128,17 +125,15 @@ export default function Questionbank(){
         if (!dataLoaded) return;
         const user = auth.currentUser;
         if (!user) return;
-
         const docRef=doc(db,"Users", user.uid);
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()){
-            const data = {
-            LastSeenThisQuestion: currentQuestionNumber,
-            LastSeenCategory: refDropDownCategory.current
+
+        const data = {
+        LastSeenThisQuestion: currentQuestionNumber,
+        LastSeenCategory: refDropDownCategory.current
             }
-            refCurrentQuestionNumber.current = currentQuestionNumber;
-            updateDoc(docRef,data);
-        }
+
+        refCurrentQuestionNumber.current = currentQuestionNumber;
+        updateDoc(docRef,data);
     };
 
     //when user comes back to the question bank module, this should reload. 
@@ -146,15 +141,14 @@ export default function Questionbank(){
         const user = auth.currentUser
         if (!user) return;
         const docRef = doc(db,'Users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()){
-            updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
-            refDropDownCategory.current = docSnap.data().LastSeenCategory;
-            document.getElementById('DropDownForCategory').value = refDropDownCategory.current
-            updateAnswers(docSnap.data().answers)
-            updateRightAnswerCount(docSnap.data().rightAnswerCount)
-            updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
-        }
+        const docSnap = await getDoc(docRef)
+
+        updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
+        refDropDownCategory.current = docSnap.data().LastSeenCategory;
+        document.getElementById('DropDownForCategory').value = refDropDownCategory.current
+        updateAnswers(docSnap.data().answers)
+        updateRightAnswerCount(docSnap.data().rightAnswerCount)
+        updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
         setDataLoaded(true)
         
     }

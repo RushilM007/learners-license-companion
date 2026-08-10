@@ -16,7 +16,6 @@ export default function HomeScreen(){
 
     function logout(){
         auth.signOut()
-
         navigate("/")
     }
 
