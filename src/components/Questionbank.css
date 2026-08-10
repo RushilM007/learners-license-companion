@@ -226,7 +226,7 @@ text-align: center;
         height:16px;
     }
     .currentQuestionNumberBox{
-        width: 164px;
+        width: 144px;
         height:26px;
         font-size:15px;
         margin-top:5px;
@@ -234,7 +234,7 @@ text-align: center;
         margin-left:1px;
     }
     #jumpToQuestionBox{
-        width:191px;
+        width:183px;
         height:26px;
     }
     #jumpToQuestionText{
@@ -247,7 +247,7 @@ text-align: center;
         margin-left:10px;
         margin-right:10px;
         width: 359px;
-        height:500px;
+        height:400px;
         margin-left:0px;
         margin-top:5px;
         font-size:15px;
@@ -255,7 +255,7 @@ text-align: center;
     .QuestionImage{
         height:86px;
         width: 86px;
-        margin-left: 60px;
+        margin-left: 100px;
     }
     .Answer{
         font-size:12px;
@@ -264,7 +264,7 @@ text-align: center;
         margin-right:190px;
     }
     .NavigateQuestionsBox{
-        margin-top:510px;
+        margin-top:460px;
     }
    
 }
