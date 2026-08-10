@@ -244,9 +244,11 @@ text-align: center;
         width: 25px
     }
     .QuestionBox{
-        margin-left:5px;
+        padding: 5px;
         width: 359px;
         height:616px;
+        margin-left:0px;
+        margin-top:5px;
     }
     .QuestionImage{
         height:86px;
@@ -256,8 +258,10 @@ text-align: center;
         font-size:12px;
     }
     #NavigateQuestionsLeft{
-        margin-right:300px;
-
+        margin-right:100px;
+    }
+    .NavigateQuestionsBox{
+        margin-top:100px;
     }
    
 }
