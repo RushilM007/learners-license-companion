@@ -258,6 +258,11 @@
         width: 25px;
         height: 30px;
     }
+    .NavigateBetweenQuestionsSymbol{
+        width:20px;
+        height:20px;
+        padding: 1px;
+    }
 }
 
 
