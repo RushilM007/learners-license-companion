@@ -10,46 +10,18 @@ import { useNavigate } from "react-router-dom"
 import {clsx} from 'clsx'
 
 export default function Questionbank(){
+    const navigate = useNavigate();
 
     const refCurrentQuestionNumber = useRef(null)
     const refDropDownCategory = useRef(null)
-
     const [currentQuestionNumber, updateQuestionNumber] = useState();
+    const [category, setCategory] = useState()
     const [displayCategoryError, updateDisplayCategoryError] = useState(false)
     const [answers, updateAnswers] = useState({})
     const [bookmarkData, updateBookmarkData] = useState({})
     const [rightAnswerCount, updateRightAnswerCount] = useState()
     const [wrongAnswerCount, updateWrongAnswerCount] = useState()
     const [dataLoaded, setDataLoaded] = useState(false)
-
-    const navigate = useNavigate();
-
-    useEffect(()=>{
-        const unsub = onAuthStateChanged(auth, (user)=>{
-            if (user){
-                setDataLoaded(false)
-                ReloadDataInDB();
-            }
-        })
-        return () => unsub()
-    },[])
-
-    useEffect(()=>{
-        storeLastSeenQuestionAndCategory();
-    },[currentQuestionNumber])
-
-    useEffect(()=>{
-        document.addEventListener('keydown', detectKeyDown, true);
-    },[])
-
-    useEffect(()=>{
-        storeAnswersAndRightWrongCount()
-    }, [answers])
-
-    useEffect(()=>{
-        logBookmarkChanges()
-    },[bookmarkData])
-    
 
     const answersEmptyDict = useMemo(()=>{
         let answersEmptyDict1 = {};
@@ -63,20 +35,56 @@ export default function Questionbank(){
     const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
     const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
     const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
+    const AllQuestions = useMemo(()=>{ return Questions },[]);
     const bookmarkedQuestions = useMemo(()=>{ return Questions.filter((question)=>bookmarkData[question.id]===true)}, [bookmarkData])
 
+    useEffect(()=>{
+        const unsub = onAuthStateChanged(auth, (user)=>{
+            if (user){
+                setDataLoaded(false)
+                ReloadDataInDB();
+            }
+        })
+        return () => unsub()
+    },[])
+
+    useEffect(()=>{
+        //everytime question number changes, store the user's latest question number and selected category in DB. 
+        storeLastSeenQuestionAndCategory();
+    },[currentQuestionNumber])
+
+    useEffect(()=>{
+        document.addEventListener('keydown', detectKeyDown, true);
+        return () => document.removeEventListener('keydown', detectKeyDown, true);
+    },[currentQuestionNumber, bookmarkedQuestions])
+
+    useEffect(()=>{
+        //everytime the user selects an answer, store the answer and calculated right/wrong counts in DB. 
+        storeAnswersAndRightWrongCount()
+    }, [answers])
+
+    useEffect(()=>{
+        // everytime a bookmark is removed or added, log that in the DB. 
+        logBookmarkChanges()
+    },[bookmarkData])
+    
     async function logBookmarkChanges(){
-        const user = auth.currentUser
+        if (!dataLoaded) return;
+
+        const user = auth.currentUser;
         const docRef=doc(db,"Users", user.uid);
-        const docSnap = await getDoc(docRef)
         const data = {
             bookmarkData:bookmarkData
         }
-        updateDoc(docRef, data)
+        await updateDoc(docRef, data)
     }
 
     async function resetAllProgress(){
+        const confirmed = window.confirm("Are you sure you want to reset all progress? This can't be undone.");
+        if (!confirmed) return;
+
         const user = auth.currentUser
+
         const docRef=doc(db,"Users", user.uid);
         const docSnap = await getDoc(docRef)
 
@@ -87,12 +95,54 @@ export default function Questionbank(){
         wrongAnswerCount: 0,
         answers: answersEmptyDict
         }
-        updateDoc(docRef,data);
+        await updateDoc(docRef,data);
 
         window.location.reload()
     }
 
+    async function storeLastSeenQuestionAndCategory(){
+        if (!dataLoaded) return;
+        const user = auth.currentUser;
+        const docRef=doc(db,"Users", user.uid);
+
+        const data = {
+        LastSeenThisQuestion: currentQuestionNumber,
+        LastSeenCategory: refDropDownCategory.current
+            }
+
+        refCurrentQuestionNumber.current = currentQuestionNumber;
+        await updateDoc(docRef,data);
+    };
+
+    async function ReloadDataInDB(){
+        const user = auth.currentUser
+        const docRef = doc(db,'Users', user.uid);
+        const docSnap = await getDoc(docRef)
+
+        updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
+        refDropDownCategory.current = docSnap.data().LastSeenCategory;
+        document.getElementById('DropDownForCategory').value = refDropDownCategory.current
+        updateAnswers(docSnap.data().answers)
+        updateRightAnswerCount(docSnap.data().rightAnswerCount)
+        updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
+        setDataLoaded(true)
+        updateBookmarkData(docSnap.data().bookmarkData)
+    }
+
+    async function storeAnswersAndRightWrongCount(){ 
+            if (!dataLoaded) return;
+            const user = auth.currentUser;
+            const docRef = doc(db,'Users', user.uid);
+            const data = {
+                answers: answers,
+                wrongAnswerCount: wrongAnswerCount,
+                rightAnswerCount: rightAnswerCount
+            }
+            await updateDoc(docRef,data)
+    }
+
     function moveRight(){
+        updateDisplayCategoryError(false)
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current < RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev+1)
@@ -104,12 +154,23 @@ export default function Questionbank(){
             if (refCurrentQuestionNumber.current >= GDPQuestions[0].id && refCurrentQuestionNumber.current < GDPQuestions[GDPQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev+1)
             }
-        } else {
+        } 
+        else if (refDropDownCategory.current==="Category: Bookmarks"){
+            let idx = bookmarkedQuestions.findIndex(q=>q.id === refCurrentQuestionNumber.current)
+            if (idx!=-1 && idx < bookmarkedQuestions.length-1){
+                updateQuestionNumber(bookmarkedQuestions[idx+1].id)
+
+            }
+        }
+        else {
+            if (refCurrentQuestionNumber.current < GDPQuestions[RoadSignQuestions.length-1].id){
             updateQuestionNumber(prev=>prev+1)
+            }
         }
     }
 
     function moveLeft(){
+        updateDisplayCategoryError(false)
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
@@ -121,7 +182,13 @@ export default function Questionbank(){
             if (refCurrentQuestionNumber.current > GDPQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[GDPQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
             }
-        } else {
+        } else if (refDropDownCategory.current ==="Category: Bookmarks"){
+            let idx = bookmarkedQuestions.findIndex(q=>q.id===refCurrentQuestionNumber.current)
+            if (idx>0){
+                updateQuestionNumber(bookmarkedQuestions[idx-1].id)
+            }
+        } 
+        else {
             if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[RoadSignQuestions.length-1].id){
             updateQuestionNumber(prev=>prev-1)
             }
@@ -137,71 +204,29 @@ export default function Questionbank(){
         }
     }
 
-    async function storeLastSeenQuestionAndCategory(){
-        if (!dataLoaded) return;
-        const user = auth.currentUser;
-        const docRef=doc(db,"Users", user.uid);
-
-        const data = {
-        LastSeenThisQuestion: currentQuestionNumber,
-        LastSeenCategory: refDropDownCategory.current
-            }
-
-        refCurrentQuestionNumber.current = currentQuestionNumber;
-        updateDoc(docRef,data);
-    };
-
-    async function ReloadDataInDB(){
-        const user = auth.currentUser
-        if (!user) return;
-        const docRef = doc(db,'Users', user.uid);
-        const docSnap = await getDoc(docRef)
-
-        updateQuestionNumber(docSnap.data().LastSeenThisQuestion);
-        refDropDownCategory.current = docSnap.data().LastSeenCategory;
-        document.getElementById('DropDownForCategory').value = refDropDownCategory.current
-        updateAnswers(docSnap.data().answers)
-        updateRightAnswerCount(docSnap.data().rightAnswerCount)
-        updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
-        setDataLoaded(true)
-        updateBookmarkData(docSnap.data().bookmarkData)
-        
-    }
-
-    function storeAnswersAndRightWrongCount(){ 
-            if (!dataLoaded) return;
-            const user = auth.currentUser;
-            if (!user) return;
-            const docRef = doc(db,'Users', user.uid);
-            const data = {
-                answers: answers,
-                wrongAnswerCount: wrongAnswerCount,
-                rightAnswerCount: rightAnswerCount
-            }
-            updateDoc(docRef,data)
-    }
-
-    function jumpToQuestion(e){
-        //it should only be within the bound of the category 
+    function jumpToQuestion(){
         if (refDropDownCategory.current === "Category: Road Signs"){
-            if (e.target.valueAsNumber >= RoadSignQuestions[0].id && e.target.valueAsNumber <= RoadSignQuestions[RoadSignQuestions.length-1].id){
+            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${RoadSignQuestions[0].id} and ${ RoadSignQuestions[RoadSignQuestions.length-1].id}` )
+            if (targetNumber >= RoadSignQuestions[0].id && targetNumber <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(e.target.valueAsNumber)
+                updateQuestionNumber(targetNumber)
             } else {
                 updateDisplayCategoryError(true)
             }
         }  
 
         if (refDropDownCategory.current === "Category: Rules of the Road"){
-            if (e.target.valueAsNumber >= RoadRulesQuestions[0].id && e.target.valueAsNumber <= RoadRulesQuestions[RoadRulesQuestions.length-1].id){
+            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${RoadRulesQuestions[0].id} and ${ RoadRulesQuestions[RoadRulesQuestions.length-1].id}` )
+            if (targetNumber >= RoadRulesQuestions[0].id && targetNumber <= RoadRulesQuestions[RoadRulesQuestions.length-1].id){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(e.target.valueAsNumber)
+                updateQuestionNumber(targetNumber)
             } else {
                 updateDisplayCategoryError(true)
             }
         }
 
         if (refDropDownCategory.current === "Category: General Driving Principles"){
+            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${GDPQuestions[0].id} and ${ GDPQuestions[GDPQuestions.length-1].id}` )
             if (e.target.valueAsNumber >= GDPQuestions[0].id && e.target.valueAsNumber <= GDPQuestions[GDPQuestions.length-1].id){
                 updateDisplayCategoryError(false)
                 updateQuestionNumber(e.target.valueAsNumber)
@@ -221,28 +246,31 @@ export default function Questionbank(){
     }
 
     function changeCategory(e){
-        refDropDownCategory.current = e.target.value
-        if (e.target.value === "Category: Road Signs"){
-            const RoadSignQuestions = Questions.filter((question)=>question.category==="Road Signs")
+        const value = e.target.value
+        refDropDownCategory.current = value
+        setCategory(value)
+        if (value === "Category: Road Signs"){
             updateQuestionNumber(RoadSignQuestions[0].id)
             document.getElementById('DropDownForCategory').blur()
-
-        } else if (e.target.value === "Category: Rules of the Road"){
-            const RoadRulesQuestions = Questions.filter((question)=>question.category==="Rules of the Road")
+        } else if (value === "Category: Rules of the Road"){
             updateQuestionNumber(RoadRulesQuestions[0].id)
             document.getElementById('DropDownForCategory').blur()
-
-
-        } else if (e.target.value === "Category: General Driving Principles"){
-            const GDPQuestions = Questions.filter((question)=>question.category==="General Driving Principles")
+        } else if (value === "Category: General Driving Principles"){
             updateQuestionNumber(GDPQuestions[0].id)
             document.getElementById('DropDownForCategory').blur()
-
+        } else if (value === "Category: All"){
+            updateQuestionNumber(Questions[0].id)
+            document.getElementById('DropDownForCategory').blur()
+        } else if (value === "Category: Bookmarks"){
+            if (bookmarkedQuestions.length===0){
+                return;
+            }
+            updateQuestionNumber(bookmarkedQuestions[0].id)
+            document.getElementById('DropDownForCategory').blur()
         }
     }
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
-
 
         function toggleBookmark(){
             let newData;
@@ -332,19 +360,32 @@ export default function Questionbank(){
                 <option>Category: Road Signs</option>
                 <option>Category: Rules of the Road</option>
                 <option>Category: General Driving Principles</option>
-                <option>Category: Bookmarks</option>
+                {bookmarkedQuestions.length > 0 && <option>Category: Bookmarks</option>}
             </select>
 
             <button onClick = {resetAllProgress} className = "refreshButton">
                 <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
             </button>
 
-            <div className = "currentQuestionNumberContainer"><p className = "CurrentQuestionNumberText">Question: {currentQuestionNumber} of {Questions.length}</p></div>
+            <div className = "currentQuestionNumberContainer">
+                <p className = "CurrentQuestionNumberText">
+                    Question: 
+                    {(refDropDownCategory.current === "Category: All"|| refDropDownCategory.current === "Category: Road Signs")?currentQuestionNumber:
+                    refDropDownCategory.current === "Category: Rules of the Road"?currentQuestionNumber-94:
+                    refDropDownCategory.current === "Category: General Driving Principles"?currentQuestionNumber-253:
+                    refDropDownCategory.current === "Category: Bookmarks"?bookmarkQuestionNumber:null } of 
+                    
+                        {refDropDownCategory.current==="Category: All"?AllQuestions.length:
+                        refDropDownCategory.current==="Category: Road Signs"?RoadSignQuestions.length:
+                        refDropDownCategory.current==="Category: Rules of the Road"?RoadRulesQuestions.length:
+                        refDropDownCategory.current==="Category: General Driving Principles"?GDPQuestions.length:
+                        refDropDownCategory.current === "Category: Bookmarks"?bookmarkedQuestions.length:null}</p>
+            </div>
 
-            <section id = "JumpToQuestionContainer">
-                <p id = "jumpToQuestionText">Jump to Question: <input type = "number" max = {Questions.length} min = {1} id = "jumpToQuestionInput" onChange={jumpToQuestion}></input></p>
+            <button onClick = {jumpToQuestion} id = "JumpToQuestionContainer">
+                <p id = "jumpToQuestionText">Jump to Question</p>
                 {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
-            </section>
+            </button>
 
         </section>
       
