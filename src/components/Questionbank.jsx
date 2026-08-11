@@ -35,7 +35,6 @@ export default function Questionbank(){
     const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
     const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
     const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
-    const AllQuestions = useMemo(()=>{ return Questions },[]);
     const bookmarkedQuestions = useMemo(()=>{ return Questions.filter((question)=>bookmarkData[question.id]===true)}, [bookmarkData])
 
     useEffect(()=>{
@@ -206,20 +205,20 @@ export default function Questionbank(){
 
     function jumpToQuestion(){
         if (refDropDownCategory.current === "Category: Road Signs"){
-            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${RoadSignQuestions[0].id} and ${ RoadSignQuestions[RoadSignQuestions.length-1].id}` )
-            if (targetNumber >= RoadSignQuestions[0].id && targetNumber <= RoadSignQuestions[RoadSignQuestions.length-1].id){
+            let targetNumber = window.prompt(`Enter a valid question number between ${RoadSignQuestions[0].id} and ${ RoadSignQuestions[RoadSignQuestions.length-1].id}` )
+            if (Number(targetNumber) >= RoadSignQuestions[0].id && Number(targetNumber) <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(targetNumber)
+                updateQuestionNumber(Number(targetNumber))
             } else {
                 updateDisplayCategoryError(true)
             }
         }  
 
         if (refDropDownCategory.current === "Category: Rules of the Road"){
-            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${RoadRulesQuestions[0].id} and ${ RoadRulesQuestions[RoadRulesQuestions.length-1].id}` )
-            if (targetNumber >= RoadRulesQuestions[0].id && targetNumber <= RoadRulesQuestions[RoadRulesQuestions.length-1].id){
+            let targetNumber = window.prompt(`Enter a valid question number between ${RoadRulesQuestions[0].id-94} and ${ RoadRulesQuestions[RoadRulesQuestions.length-1].id-94}` )
+            if (Number(targetNumber) >= RoadRulesQuestions[0].id-94 && Number(targetNumber) <= RoadRulesQuestions[RoadRulesQuestions.length-1].id-94){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(targetNumber)
+                updateQuestionNumber(Number(targetNumber)+94)
             } else {
                 updateDisplayCategoryError(true)
             }
@@ -227,18 +226,19 @@ export default function Questionbank(){
 
         if (refDropDownCategory.current === "Category: General Driving Principles"){
             let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${GDPQuestions[0].id} and ${ GDPQuestions[GDPQuestions.length-1].id}` )
-            if (e.target.valueAsNumber >= GDPQuestions[0].id && e.target.valueAsNumber <= GDPQuestions[GDPQuestions.length-1].id){
+            if (Number(targetNumber) >= GDPQuestions[0].id-253 && Number(targetNumber) <= GDPQuestions[GDPQuestions.length-1].id-253){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(e.target.valueAsNumber)
+                updateQuestionNumber(Number(targetNumber)+253)
             } else {
                 updateDisplayCategoryError(true)
             }
         } 
         
         if (refDropDownCategory.current === "Category: All"){
-            if (e.target.valueAsNumber >= Questions[0].id && e.target.valueAsNumber <= Questions[Questions.length-1].id){
+            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${Questions[0].id} and ${ Questions[Questions.length-1].id}` )
+            if (Number(targetNumber) >= Questions[0].id && Number(targetNumber) <= Questions[Questions.length-1].id){
                 updateDisplayCategoryError(false)
-                updateQuestionNumber(e.target.valueAsNumber)
+                updateQuestionNumber(Number(targetNumber))
             } else {
                 updateDisplayCategoryError(true)
             }
@@ -280,6 +280,10 @@ export default function Questionbank(){
                 newData = false
             } else if (bookmarkData[question.id]===false){
                 newData = true
+            }
+
+            if (newData === false && refDropDownCategory.current === "Category: Bookmarks"){
+                // add logic to stop bookmarks categ from crashing here 
             }
 
             updateBookmarkData({
@@ -369,13 +373,10 @@ export default function Questionbank(){
 
             <div className = "currentQuestionNumberContainer">
                 <p className = "CurrentQuestionNumberText">
-                    Question: 
-                    {(refDropDownCategory.current === "Category: All"|| refDropDownCategory.current === "Category: Road Signs")?currentQuestionNumber:
+                    Question: {(refDropDownCategory.current === "Category: All"|| refDropDownCategory.current === "Category: Road Signs")?currentQuestionNumber:
                     refDropDownCategory.current === "Category: Rules of the Road"?currentQuestionNumber-94:
                     refDropDownCategory.current === "Category: General Driving Principles"?currentQuestionNumber-253:
-                    refDropDownCategory.current === "Category: Bookmarks"?bookmarkQuestionNumber:null } of 
-                    
-                        {refDropDownCategory.current==="Category: All"?AllQuestions.length:
+                    refDropDownCategory.current === "Category: Bookmarks"?bookmarkedQuestions.findIndex(q=>q.id===currentQuestionNumber)+1:null } of {refDropDownCategory.current==="Category: All"?Questions.length:
                         refDropDownCategory.current==="Category: Road Signs"?RoadSignQuestions.length:
                         refDropDownCategory.current==="Category: Rules of the Road"?RoadRulesQuestions.length:
                         refDropDownCategory.current==="Category: General Driving Principles"?GDPQuestions.length:
