@@ -32,7 +32,8 @@ export default function SignInWithGoogle(){
                     LastSeenCategory: "Category: All",
                     answers: answers,
                     rightAnswerCount: 0,
-                    wrongAnswerCount: 0
+                    wrongAnswerCount: 0,
+                    bookmarkData: answers
 
                 })
                 navigate("/HomeScreen")

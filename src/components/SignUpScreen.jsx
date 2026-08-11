@@ -44,7 +44,8 @@ export default function SignUpScreen(){
                     LastSeenCategory: "Category: All",
                     answers: answers,
                     rightAnswerCount: 0,
-                    wrongAnswerCount: 0
+                    wrongAnswerCount: 0,
+                    bookmarkData: answers
                 })
             }
             } catch (error){

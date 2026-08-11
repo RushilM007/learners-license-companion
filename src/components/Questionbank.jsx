@@ -17,6 +17,7 @@ export default function Questionbank(){
     const [currentQuestionNumber, updateQuestionNumber] = useState();
     const [displayCategoryError, updateDisplayCategoryError] = useState(false)
     const [answers, updateAnswers] = useState({})
+    const [bookmarkData, updateBookmarkData] = useState({})
     const [rightAnswerCount, updateRightAnswerCount] = useState()
     const [wrongAnswerCount, updateWrongAnswerCount] = useState()
     const [dataLoaded, setDataLoaded] = useState(false)
@@ -45,6 +46,11 @@ export default function Questionbank(){
         storeAnswersAndRightWrongCount()
     }, [answers])
 
+    useEffect(()=>{
+        logBookmarkChanges()
+    },[bookmarkData])
+    
+
     const answersEmptyDict = useMemo(()=>{
         let answersEmptyDict1 = {};
         for (let i = 1; i < Questions.length+1; i++){
@@ -57,6 +63,17 @@ export default function Questionbank(){
     const RoadSignQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="Road Signs")}, [])
     const RoadRulesQuestions = useMemo(()=>{return Questions.filter((question)=>question.category==="Rules of the Road")}, [])
     const GDPQuestions = useMemo(()=>{ return Questions.filter((question)=>question.category==="General Driving Principles")},[]);
+    const bookmarkedQuestions = useMemo(()=>{ return Questions.filter((question)=>bookmarkData[question.id]===true)}, [bookmarkData])
+
+    async function logBookmarkChanges(){
+        const user = auth.currentUser
+        const docRef=doc(db,"Users", user.uid);
+        const docSnap = await getDoc(docRef)
+        const data = {
+            bookmarkData:bookmarkData
+        }
+        updateDoc(docRef, data)
+    }
 
     async function resetAllProgress(){
         const user = auth.currentUser
@@ -147,6 +164,7 @@ export default function Questionbank(){
         updateRightAnswerCount(docSnap.data().rightAnswerCount)
         updateWrongAnswerCount(docSnap.data().wrongAnswerCount)
         setDataLoaded(true)
+        updateBookmarkData(docSnap.data().bookmarkData)
         
     }
 
@@ -225,6 +243,23 @@ export default function Questionbank(){
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
 
+
+        function toggleBookmark(){
+            let newData;
+            if (bookmarkData[question.id]===null){
+                newData = true
+            } else if (bookmarkData[question.id]===true){
+                newData = false
+            } else if (bookmarkData[question.id]===false){
+                newData = true
+            }
+
+            updateBookmarkData({
+                ...bookmarkData,
+                [question.id]:  newData
+            })
+        }
+
         function handleClickingAnswer(question, index){
             //if question has already been answered do not take a new answer
             if (answers[question.id]!=null){
@@ -266,6 +301,9 @@ export default function Questionbank(){
         
         return (
             <section key = {1}>
+
+            <button key = {2} onClick = {toggleBookmark} className = "BookmarkButton"><img className = "bookmark" src = {(bookmarkData[question.id]===false|| bookmarkData[question.id]===null)?"../assets/images/icons/bookmark-white.png":"../assets/images/icons/bookmark.png"} alt = "bookmark unchecked"></img></button>
+
             <p key = {question.question} className = "Question">{question.question}</p>
 
             {question.image!==null && <div id = "image2"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
