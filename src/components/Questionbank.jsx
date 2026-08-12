@@ -158,7 +158,6 @@ export default function Questionbank(){
             let idx = bookmarkedQuestions.findIndex(q=>q.id === refCurrentQuestionNumber.current)
             if (idx!=-1 && idx < bookmarkedQuestions.length-1){
                 updateQuestionNumber(bookmarkedQuestions[idx+1].id)
-
             }
         }
         else {
@@ -225,7 +224,7 @@ export default function Questionbank(){
         }
 
         if (refDropDownCategory.current === "Category: General Driving Principles"){
-            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${GDPQuestions[0].id} and ${ GDPQuestions[GDPQuestions.length-1].id}` )
+            let targetNumber = window.prompt(`Enter a valid question number between ${GDPQuestions[0].id} and ${ GDPQuestions[GDPQuestions.length-1].id}` )
             if (Number(targetNumber) >= GDPQuestions[0].id-253 && Number(targetNumber) <= GDPQuestions[GDPQuestions.length-1].id-253){
                 updateDisplayCategoryError(false)
                 updateQuestionNumber(Number(targetNumber)+253)
@@ -235,14 +234,24 @@ export default function Questionbank(){
         } 
         
         if (refDropDownCategory.current === "Category: All"){
-            let targetNumber = window.prompt(`Enter a valid question number for the Road Signs Category, between ${Questions[0].id} and ${ Questions[Questions.length-1].id}` )
+            let targetNumber = window.prompt(`Enter a valid question number between ${Questions[0].id} and ${ Questions[Questions.length-1].id}` )
             if (Number(targetNumber) >= Questions[0].id && Number(targetNumber) <= Questions[Questions.length-1].id){
-                updateDisplayCategoryError(false)
+                updateDisplayCategoryError(false) // maybe remove 
                 updateQuestionNumber(Number(targetNumber))
             } else {
                 updateDisplayCategoryError(true)
             }
         } 
+
+        if (refDropDownCategory.current === "Category: Bookmarks"){
+            let targetNumber = window.prompt(`Enter a valid question number between 1 and ${bookmarkedQuestions.length}` )
+            if (Number(targetNumber) >= 1 && Number(targetNumber) <= bookmarkedQuestions.length){
+                updateDisplayCategoryError(false)
+                updateQuestionNumber(Number(bookmarkedQuestions[Number(targetNumber)-1].id))
+            }else{
+                updateDisplayCategoryError(true)
+            }
+        }
     }
 
     function changeCategory(e){
@@ -262,9 +271,6 @@ export default function Questionbank(){
             updateQuestionNumber(Questions[0].id)
             document.getElementById('DropDownForCategory').blur()
         } else if (value === "Category: Bookmarks"){
-            if (bookmarkedQuestions.length===0){
-                return;
-            }
             updateQuestionNumber(bookmarkedQuestions[0].id)
             document.getElementById('DropDownForCategory').blur()
         }
@@ -283,14 +289,28 @@ export default function Questionbank(){
             }
 
             if (newData === false && refDropDownCategory.current === "Category: Bookmarks"){
-                // add logic to stop bookmarks categ from crashing here 
+                const idx = bookmarkedQuestions.findIndex(q=>q.id===question.id)
+                const remaining = bookmarkedQuestions.filter(q=>q.id!=question.id)
+
+                if (remaining.length===0){
+                    refDropDownCategory.current = "Category: All"
+                    setCategory("Category: All")
+                    document.getElementById('DropDownForCategory').value = "Category: All"
+                    updateQuestionNumber(Questions[0].id)
+                } else {
+                    const nextIdx = Math.min(idx, remaining.length -1)
+                    updateQuestionNumber(remaining[nextIdx].id)
+                }
+
+
             }
 
-            updateBookmarkData({
-                ...bookmarkData,
-                [question.id]:  newData
-            })
-        }
+             updateBookmarkData({
+                    ...bookmarkData,
+                    [question.id]:  newData
+                })    
+        } 
+        
 
         function handleClickingAnswer(question, index){
             //if question has already been answered do not take a new answer
@@ -333,13 +353,9 @@ export default function Questionbank(){
         
         return (
             <section key = {1}>
-
             <button key = {2} onClick = {toggleBookmark} className = "BookmarkButton"><img className = "bookmark" src = {(bookmarkData[question.id]===false|| bookmarkData[question.id]===null)?"../assets/images/icons/bookmark-white.png":"../assets/images/icons/bookmark.png"} alt = "bookmark unchecked"></img></button>
-
             <p key = {question.question} className = "Question">{question.question}</p>
-
             {question.image!==null && <div id = "image2"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
-
             <div className = "AnswersBox">
                 {displayOptions}
             </div>
@@ -349,6 +365,7 @@ export default function Questionbank(){
 
     return(
         <>
+
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
