@@ -16,7 +16,6 @@ export default function Questionbank(){
     const refDropDownCategory = useRef(null)
     const [currentQuestionNumber, updateQuestionNumber] = useState();
     const [category, setCategory] = useState()
-    const [displayCategoryError, updateDisplayCategoryError] = useState(false)
     const [answers, updateAnswers] = useState({})
     const [bookmarkData, updateBookmarkData] = useState({})
     const [rightAnswerCount, updateRightAnswerCount] = useState()
@@ -141,7 +140,6 @@ export default function Questionbank(){
     }
 
     function moveRight(){
-        updateDisplayCategoryError(false)
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current>= RoadSignQuestions[0].id && refCurrentQuestionNumber.current < RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev+1)
@@ -167,7 +165,6 @@ export default function Questionbank(){
     }
 
     function moveLeft(){
-        updateDisplayCategoryError(false)
         if (refDropDownCategory.current==="Category: Road Signs"){
             if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= RoadSignQuestions[RoadSignQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
@@ -204,50 +201,46 @@ export default function Questionbank(){
         if (refDropDownCategory.current === "Category: Road Signs"){
             let targetNumber = window.prompt(`Enter a valid question number between ${RoadSignQuestions[0].id} and ${ RoadSignQuestions[RoadSignQuestions.length-1].id}` )
             if (Number(targetNumber) >= RoadSignQuestions[0].id && Number(targetNumber) <= RoadSignQuestions[RoadSignQuestions.length-1].id){
-                updateDisplayCategoryError(false)
                 updateQuestionNumber(Number(targetNumber))
             } else {
-                updateDisplayCategoryError(true)
+                window.alert("Number you entered is not within category")
             }
         }  
 
         if (refDropDownCategory.current === "Category: Rules of the Road"){
             let targetNumber = window.prompt(`Enter a valid question number between ${RoadRulesQuestions[0].id-94} and ${ RoadRulesQuestions[RoadRulesQuestions.length-1].id-94}` )
             if (Number(targetNumber) >= RoadRulesQuestions[0].id-94 && Number(targetNumber) <= RoadRulesQuestions[RoadRulesQuestions.length-1].id-94){
-                updateDisplayCategoryError(false)
                 updateQuestionNumber(Number(targetNumber)+94)
             } else {
-                updateDisplayCategoryError(true)
+                window.alert("Number you entered is not within category")
+
             }
         }
 
         if (refDropDownCategory.current === "Category: General Driving Principles"){
             let targetNumber = window.prompt(`Enter a valid question number between ${GDPQuestions[0].id} and ${ GDPQuestions[GDPQuestions.length-1].id}` )
             if (Number(targetNumber) >= GDPQuestions[0].id-253 && Number(targetNumber) <= GDPQuestions[GDPQuestions.length-1].id-253){
-                updateDisplayCategoryError(false)
                 updateQuestionNumber(Number(targetNumber)+253)
             } else {
-                updateDisplayCategoryError(true)
+                window.alert("Number you entered is not within category")
             }
         } 
         
         if (refDropDownCategory.current === "Category: All"){
             let targetNumber = window.prompt(`Enter a valid question number between ${Questions[0].id} and ${ Questions[Questions.length-1].id}` )
             if (Number(targetNumber) >= Questions[0].id && Number(targetNumber) <= Questions[Questions.length-1].id){
-                updateDisplayCategoryError(false) // maybe remove 
                 updateQuestionNumber(Number(targetNumber))
             } else {
-                updateDisplayCategoryError(true)
+                window.alert("Number you entered is not within category")
             }
         } 
 
         if (refDropDownCategory.current === "Category: Bookmarks"){
             let targetNumber = window.prompt(`Enter a valid question number between 1 and ${bookmarkedQuestions.length}` )
             if (Number(targetNumber) >= 1 && Number(targetNumber) <= bookmarkedQuestions.length){
-                updateDisplayCategoryError(false)
                 updateQuestionNumber(Number(bookmarkedQuestions[Number(targetNumber)-1].id))
             }else{
-                updateDisplayCategoryError(true)
+                window.alert("Number you entered is not within category")
             }
         }
     }
@@ -381,7 +374,6 @@ export default function Questionbank(){
             </div>
             <button onClick = {jumpToQuestion} id = "JumpToQuestionContainer">
                 <p>Jump to Question</p>
-                {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
             </button>
         </section>
       
