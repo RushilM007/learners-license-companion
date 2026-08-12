@@ -67,6 +67,7 @@
     max-width: 900px;
     margin:0 auto;
     background-color:#FFFFFF;   
+    text-wrap:wrap
 }
 
 .AnswersBox{
@@ -199,7 +200,6 @@
     margin-top: 20px;
     background: #FFFFFF;
     border:none;
-    
 }
 
 @media (max-width: 480px){
@@ -281,6 +281,16 @@
     }
     .AnswersBox{
         margin-top:30px;
+    }
+    .Bookmark{
+        width: 15px;
+        height: 15px;
+    }
+    .BookmarkButton{
+        margin-left: 400px;
+        margin-top: 20px;
+        background: #FFFFFF;
+        border:none;
     }
 }
 
