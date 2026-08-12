@@ -107,7 +107,7 @@ export default function Questionbank(){
         const data = {
         LastSeenThisQuestion: currentQuestionNumber,
         LastSeenCategory: refDropDownCategory.current
-            }
+        }
 
         refCurrentQuestionNumber.current = currentQuestionNumber;
         await updateDoc(docRef,data);
@@ -147,21 +147,20 @@ export default function Questionbank(){
                 updateQuestionNumber(prev=>prev+1)
             }
         } else if (refDropDownCategory.current==="Category: Rules of the Road"){
-            if (refCurrentQuestionNumber.current >= RoadRulesQuestions[0].id && refCurrentQuestionNumber.current < RoadRulesQuestions[RoadRulesQuestions.length-1].id)
-            updateQuestionNumber(prev=>prev+1)
+            if (refCurrentQuestionNumber.current >= RoadRulesQuestions[0].id && refCurrentQuestionNumber.current < RoadRulesQuestions[RoadRulesQuestions.length-1].id){
+                updateQuestionNumber(prev=>prev+1)
+            }
         } else if (refDropDownCategory.current==="Category: General Driving Principles"){
             if (refCurrentQuestionNumber.current >= GDPQuestions[0].id && refCurrentQuestionNumber.current < GDPQuestions[GDPQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev+1)
             }
-        } 
-        else if (refDropDownCategory.current==="Category: Bookmarks"){
-            let idx = bookmarkedQuestions.findIndex(q=>q.id === refCurrentQuestionNumber.current)
-            if (idx!=-1 && idx < bookmarkedQuestions.length-1){
-                updateQuestionNumber(bookmarkedQuestions[idx+1].id)
+        } else if (refDropDownCategory.current==="Category: Bookmarks"){
+            const index = bookmarkedQuestions.findIndex(q=>q.id === refCurrentQuestionNumber.current)
+            if (index!=-1 && index < bookmarkedQuestions.length-1){
+                updateQuestionNumber(bookmarkedQuestions[index+1].id)
             }
-        }
-        else {
-            if (refCurrentQuestionNumber.current < GDPQuestions[RoadSignQuestions.length-1].id){
+        } else {
+            if (refCurrentQuestionNumber.current < Questions[Questions.length-1].id){
             updateQuestionNumber(prev=>prev+1)
             }
         }
@@ -179,15 +178,14 @@ export default function Questionbank(){
         } else if (refDropDownCategory.current==="Category: General Driving Principles"){
             if (refCurrentQuestionNumber.current > GDPQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[GDPQuestions.length-1].id){
                 updateQuestionNumber(prev=>prev-1)
-            }
+            } 
         } else if (refDropDownCategory.current ==="Category: Bookmarks"){
-            let idx = bookmarkedQuestions.findIndex(q=>q.id===refCurrentQuestionNumber.current)
-            if (idx>0){
-                updateQuestionNumber(bookmarkedQuestions[idx-1].id)
+            const index = bookmarkedQuestions.findIndex(q=>q.id===refCurrentQuestionNumber.current)
+            if (index>0){
+                updateQuestionNumber(bookmarkedQuestions[index-1].id)
             }
-        } 
-        else {
-            if (refCurrentQuestionNumber.current> RoadSignQuestions[0].id && refCurrentQuestionNumber.current <= GDPQuestions[RoadSignQuestions.length-1].id){
+        } else {
+            if (refCurrentQuestionNumber.current> Questions[0].id && refCurrentQuestionNumber.current <= Questions[Questions.length-1].id){
             updateQuestionNumber(prev=>prev-1)
             }
         }
@@ -287,7 +285,6 @@ export default function Questionbank(){
             } else if (bookmarkData[question.id]===false){
                 newData = true
             }
-
             if (newData === false && refDropDownCategory.current === "Category: Bookmarks"){
                 const idx = bookmarkedQuestions.findIndex(q=>q.id===question.id)
                 const remaining = bookmarkedQuestions.filter(q=>q.id!=question.id)
@@ -297,34 +294,25 @@ export default function Questionbank(){
                     setCategory("Category: All")
                     document.getElementById('DropDownForCategory').value = "Category: All"
                     updateQuestionNumber(Questions[0].id)
-                } else {
+                } else{
                     const nextIdx = Math.min(idx, remaining.length -1)
                     updateQuestionNumber(remaining[nextIdx].id)
                 }
-
-
             }
-
-             updateBookmarkData({
+            updateBookmarkData({
                     ...bookmarkData,
                     [question.id]:  newData
                 })    
         } 
         
-
         function handleClickingAnswer(question, index){
-            //if question has already been answered do not take a new answer
             if (answers[question.id]!=null){
                 return;
             }
-
-            // If question hasn't been answered before, add user's selected answer to the answers dict. 
             updateAnswers({
                 ...answers,
                 [question.id]: index
             })
-
-            //update right answer count if user answer was correct, otherwise update wrong answer count 
             if (question.correctAnswerIndex===index){
                 updateRightAnswerCount(prev=>prev+1)
             } else {
@@ -338,13 +326,8 @@ export default function Questionbank(){
                 className = {
                     clsx({
                         "Answer":answers[question.id]===null || (answers[question.id]!=null && index!=question.correctAnswerIndex || index!=answers[question.id]) ,
-
-                        //question is answered and 
-                        "rightAnswer":(answers[question.id]!=null && index===question.correctAnswerIndex),
-
-                        //if option is the user's answer and answer is incorrect
-                        "wrongAnswer": (answers[question.id]!= question.correctAnswerIndex && index===answers[question.id])
-
+                        "RightAnswer":(answers[question.id]!=null && index===question.correctAnswerIndex),
+                        "WrongAnswer": (answers[question.id]!= question.correctAnswerIndex && index===answers[question.id])
                     })
                 }
                 >{option}</button>
@@ -353,9 +336,9 @@ export default function Questionbank(){
         
         return (
             <section key = {1}>
-            <button key = {2} onClick = {toggleBookmark} className = "BookmarkButton"><img className = "bookmark" src = {(bookmarkData[question.id]===false|| bookmarkData[question.id]===null)?"../assets/images/icons/bookmark-white.png":"../assets/images/icons/bookmark.png"} alt = "bookmark unchecked"></img></button>
+            <button key = {2} onClick = {toggleBookmark} className = "BookmarkButton"><img className = "Bookmark" src = {(bookmarkData[question.id]===false|| bookmarkData[question.id]===null)?"../assets/images/icons/bookmark-white.png":"../assets/images/icons/bookmark.png"} alt = "bookmark unchecked"></img></button>
             <p key = {question.question} className = "Question">{question.question}</p>
-            {question.image!==null && <div id = "image2"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
+            {question.image!==null && <div id = "QuestionImageContainer"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
             <div className = "AnswersBox">
                 {displayOptions}
             </div>
@@ -365,7 +348,6 @@ export default function Questionbank(){
 
     return(
         <>
-
         <header className = "HomeScreenHeader">
             <Header 
                 title = "Question Bank"
@@ -383,12 +365,10 @@ export default function Questionbank(){
                 <option>Category: General Driving Principles</option>
                 {bookmarkedQuestions.length > 0 && <option>Category: Bookmarks</option>}
             </select>
-
-            <button onClick = {resetAllProgress} className = "refreshButton">
-                <img className = "refreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
+            <button onClick = {resetAllProgress} className = "RefreshButton">
+                <img className = "RefreshImage" src = "../assets/images/icons/refresh.png" alt = "refresh button" />
             </button>
-
-            <div className = "currentQuestionNumberContainer">
+            <div className = "CurrentQuestionNumberContainer">
                 <p className = "CurrentQuestionNumberText">
                     Question: {(refDropDownCategory.current === "Category: All"|| refDropDownCategory.current === "Category: Road Signs")?currentQuestionNumber:
                     refDropDownCategory.current === "Category: Rules of the Road"?currentQuestionNumber-94:
@@ -399,35 +379,26 @@ export default function Questionbank(){
                         refDropDownCategory.current==="Category: General Driving Principles"?GDPQuestions.length:
                         refDropDownCategory.current === "Category: Bookmarks"?bookmarkedQuestions.length:null}</p>
             </div>
-
             <button onClick = {jumpToQuestion} id = "JumpToQuestionContainer">
-                <p id = "jumpToQuestionText">Jump to Question</p>
+                <p>Jump to Question</p>
                 {displayCategoryError && <p id = "outOfBoundsErrorMessage">Out of Bounds of Category.</p>}
             </button>
-
         </section>
       
         <section className = "QuestionBox">
-
             {displayCurrentQuestion}
-
             <div className = "NavigateButtonsContainer">
-            
-                {currentQuestionNumber>1 && <button onClick = {moveLeft} className = "NavigateButton"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}
-                
+                {currentQuestionNumber>1 && <button onClick = {moveLeft} className = "NavigateButton"><img className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/left-arrow.png" alt = "left arrow"/></button>}  
                 {currentQuestionNumber < Questions.length && <button onClick = {moveRight} className = "NavigateButton"><img  className = "NavigateBetweenQuestionsSymbol" src = "../assets/images/icons/right-arrow.png" alt = "right arrow" /></button>}
-            
             </div>
 
         </section>
 
         <section id = "RightAndWrongCountContainer">
-
-            <img id = "checkMark" src = "../assets/images/icons/check.png" alt = "check mark " />
+            <img id = "CheckMark" src = "../assets/images/icons/check.png" alt = "check mark " />
             <p>{rightAnswerCount}</p>
-            <img id = "xMark" src = "../assets/images/icons/remove.png" alt = "x mark" />
+            <img id = "XMark" src = "../assets/images/icons/remove.png" alt = "x mark" />
             <p>{wrongAnswerCount}</p>
-
         </section>
         </>
     )

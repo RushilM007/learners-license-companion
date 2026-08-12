@@ -9,7 +9,7 @@
     font-size:19px;
 }
 
-#image2{
+#QuestionImageContainer{
     display:flex;
     align-items:center;
     justify-content:center;
@@ -22,12 +22,12 @@
     flex-wrap:wrap
 }
 
-.refreshImage{
+.RefreshImage{
     width:35px;
     height:33px;
 }
 
-.refreshButton{
+.RefreshButton{
     border:none;
     border-radius: 6px;
     box-shadow:0px 1px 2px 0px rgba(0,0,0,0.1);
@@ -44,7 +44,7 @@
    
 }
 
-.currentQuestionNumberContainer{
+.CurrentQuestionNumberContainer{
     width:200px; 
     height:52px;
     background: #FFFFFF;
@@ -61,7 +61,6 @@
     border-radius:6px;
     display:flex;
     align-items:center;
-    /* justify-content:center; */
     flex-direction:column;
     margin-top: 30px;
     height: 600px;
@@ -125,12 +124,12 @@
     border-width:1px;
 }
 
-#checkMark{
+#CheckMark{
     width: 55px;
     height: 55px;
 }
 
-#xMark{
+#XMark{
     height: 50px;
     width: 50px;
 }
@@ -151,6 +150,7 @@
     width:200px;
     text-align:center;
     border:none;
+    font-size:19px
 }
 
 #outOfBoundsErrorMessage{
@@ -160,7 +160,7 @@
     font-size: 13px;
 }
 
-.wrongAnswer{
+.WrongAnswer{
     margin: 0 auto;
     border:none;
     border-radius: 6px;
@@ -175,7 +175,7 @@
 
 }
 
-.rightAnswer{
+.RightAnswer{
     margin: 0 auto;
     border:none;
     border-radius: 6px;
@@ -189,7 +189,7 @@
     cursor:pointer;
 }
 
-.bookmark{
+.Bookmark{
     width: 30px;
     height: 30px;
 }
@@ -208,17 +208,17 @@
         height:31px;
         font-size:16px;
     }
-    .refreshButton{
+    .RefreshButton{
         margin-left:5px;
         height:31px;
         width:56px;
 
     }
-    .refreshImage{
+    .RefreshImage{
         width: 16px;
         height:16px;
     }
-    .currentQuestionNumberContainer{
+    .CurrentQuestionNumberContainer{
         width: 144px;
         min-height:26px;
         font-size:12px;
@@ -262,11 +262,11 @@
     #RightAndWrongCountContainer{
         margin-top:5px;
     }
-    #checkMark{
+    #CheckMark{
         width: 30px;
         height: 35px;
     }
-    #xMark{
+    #XMark{
         width: 25px;
         height: 30px;
     }
