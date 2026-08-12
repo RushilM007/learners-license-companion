@@ -187,7 +187,6 @@
 }
 
 .BookmarkButton{
-    /* display:flex; */
     margin-left: 800px;
     margin-top: 20px;
     background: #FFFFFF;
@@ -279,11 +278,11 @@
         height: 19px;
     }
     .BookmarkButton{
-        margin-left: 250px;
+        margin-left: 275px;
         margin-top: 10px;
     }
     .RightAnswer{
-        font-size: 15px
+        font-size: 12px
     }
 }
 
