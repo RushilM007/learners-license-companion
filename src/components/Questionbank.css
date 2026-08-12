@@ -236,7 +236,7 @@
     .QuestionBox{
         margin-left:10px;
         margin-right:10px;
-        width: auto;
+        max-width: 450px;
         box-sizing:border-box;
         height:460px;
         margin-top:10px;
@@ -283,11 +283,11 @@
         margin-top:30px;
     }
     .Bookmark{
-        width: 15px;
-        height: 15px;
+        width: 19px;
+        height: 19px;
     }
     .BookmarkButton{
-        margin-left: 400px;
+        margin-left: 300px;
         margin-top: 20px;
         background: #FFFFFF;
         border:none;
