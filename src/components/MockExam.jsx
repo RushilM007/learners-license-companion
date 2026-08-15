@@ -1,63 +1,78 @@
 import "./MockExam.css"
 import Header from "./Header"
-import React, {useState, useEffect, useRef} from "react"
+import React, {useState, useEffect, useRef, useMemo} from "react"
 import { useNavigate } from "react-router-dom"
 import { chooseTwentyQuestions } from "./Questions"
 import {clsx} from 'clsx'
 
 export default function MockExam(){
     //first do not worry about database and just create the basic interface 
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
 
-    const [inExam, updateInExam] = useState(false)
-    const [questions, updateQuestions] = useState(chooseTwentyQuestions())
-    const [currentQuestionNumber, updateQuestionNumber] = useState(1)
-    const [answers, setAnswers] = useState({})
-    const [secondsLeft, setSecondsLeft] = useState(30)
-    const [isRunning, setIsRunning] = useState(false)
-    const [hasStarted, setHasStarted] = useState(false)
-    const intervalRef = useRef(null)
+    const [inExam, updateInExam] = useState(false);
+    const [questions, updateQuestions] = useState(chooseTwentyQuestions());
+    const [currentQuestionNumber, updateQuestionNumber] = useState(1);
+    const [answers, setAnswers] = useState({});
+    const [secondsLeft, setSecondsLeft] = useState(30);
+    const [isRunning, setIsRunning] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
+    const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
+    const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
+    const intervalRef = useRef(null);
+
+    const answerKey = useMemo(()=>{
+        let answerkey1 = {};
+        for (let i = 0; i < 20; i++){
+            answerkey1[i] = questions[i].options[questions[i].correctAnswerIndex]
+        }
+        return answerkey1
+
+    }, [])
 
     useEffect(()=>{
         if (isRunning && secondsLeft > 0){
             intervalRef.current = setInterval(()=>{
-                setSecondsLeft((prev)=>prev-1)
+                setSecondsLeft((prev)=>prev-1);
             }, 1000)
         }
         if (secondsLeft === 0){
-            clearInterval(intervalRef.current)
-            updateQuestionNumber(prev=>prev+1)
-            setSecondsLeft(30)
+            clearInterval(intervalRef.current);
+            updateQuestionNumber(prev=>prev+1);
+            setSecondsLeft(30);
         }
-        return () => clearInterval(intervalRef.current)
+        return () => clearInterval(intervalRef.current);
     }, [isRunning, secondsLeft, currentQuestionNumber])
 
 
     function exitExam(){
-        updateQuestionNumber(1)
-        updateQuestions(chooseTwentyQuestions())
-        updateInExam(false)
+        updateQuestionNumber(1);
+        updateQuestions(chooseTwentyQuestions());
+        updateInExam(false);
     }
 
-    function nextQuestion(){
-        updateQuestionNumber(prev=>prev+1)
-        setSecondsLeft(30)
+    function nextQuestion(index){
+        setAnswers({
+            ...answers,
+            [currentQuestionNumber]: index
+        })
+        updateQuestionNumber(prev=>prev+1);
+        setSecondsLeft(30);
     }
 
     function toggleExam(){
-        updateInExam(true)
-        setHasStarted(true)
-        setIsRunning(true)
-        setSecondsLeft(30)
+        updateInExam(true);
+        setHasStarted(true);
+        setIsRunning(true);
+        setSecondsLeft(30);
     }
 
-    const currentQuestion = [questions[currentQuestionNumber]]
+    const currentQuestion = [questions[currentQuestionNumber]];
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
        
             const displayOptions = question.options.map((option, index)=>{
                 return (
-                    <button id = {index} key = {option} onClick = {()=>nextQuestion()} 
+                    <button id = {index} key = {option} onClick = {()=>nextQuestion(index)}
                     className = "Answer" 
                     >{option}</button>
                 )
