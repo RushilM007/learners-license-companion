@@ -12,7 +12,7 @@ export default function MockExam(){
     const [inExam, updateInExam] = useState(false)
     const [questions, updateQuestions] = useState(chooseTwentyQuestions())
     const [currentQuestionNumber, updateQuestionNumber] = useState(1)
-    const [inputTime, setInputTime] = useState(30)
+    const [answers, setAnswers] = useState({})
     const [secondsLeft, setSecondsLeft] = useState(30)
     const [isRunning, setIsRunning] = useState(false)
     const [hasStarted, setHasStarted] = useState(false)
@@ -26,7 +26,8 @@ export default function MockExam(){
         }
         if (secondsLeft === 0){
             clearInterval(intervalRef.current)
-            setIsRunning(false)
+            updateQuestionNumber(prev=>prev+1)
+            setSecondsLeft(30)
         }
         return () => clearInterval(intervalRef.current)
     }, [isRunning, secondsLeft, currentQuestionNumber])
@@ -103,7 +104,7 @@ export default function MockExam(){
         <>
         <section className = "TimerAndQuestionContainer">
             <section className = "TimerImageAndTimer">
-                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" /><p>{secondsLeft}</p>
+                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" /><p className = {secondsLeft <=5?"LessThanFiveSecsLeft":"SecondsLeft"}>{secondsLeft}</p>
             </section>
             <section className = "QuestionBoxMockExam">
                     {displayCurrentQuestion}
