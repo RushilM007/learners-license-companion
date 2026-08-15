@@ -5,7 +5,6 @@ import {createUserWithEmailAndPassword} from "firebase/auth"
 import {auth, db} from "./firebase"
 import {setDoc, doc } from "firebase/firestore"
 import SignInWithGoogle from "./SignInWithGoogle"
-import Questions from "./Questions.js"
 
 export default function SignUpScreen(){
     const [email, setEmail] = useState('');

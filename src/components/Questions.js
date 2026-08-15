@@ -1,4 +1,4 @@
-export const Questions = [
+const Questions = [
   {
     id: 1,
     category: 'Road Signs',
@@ -3297,4 +3297,15 @@ export const Questions = [
   }
 ];
 
-export default Questions;
+function chooseTwentyQuestions(){
+  let twentyQuestions = [];
+  while (twentyQuestions.length < 20){
+    let newQuestion = Questions[Math.floor(Math.random()*Questions.length)]
+    if (!twentyQuestions.includes(newQuestion)){
+      twentyQuestions.push(newQuestion)
+    }
+  }
+  return twentyQuestions;
+}
+export {Questions, chooseTwentyQuestions};
+

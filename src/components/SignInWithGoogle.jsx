@@ -4,7 +4,6 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth"
 import { auth, db } from "./firebase"
 import { doc, setDoc, getDoc, addDoc } from "firebase/firestore";
 import { Navigate, useNavigate } from "react-router-dom";
-import Questions from "./Questions.js";
 
 export default function SignInWithGoogle(){
 
