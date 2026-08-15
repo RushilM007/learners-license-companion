@@ -1,6 +1,6 @@
 import "./MockExam.css"
 import Header from "./Header"
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useRef} from "react"
 import { useNavigate } from "react-router-dom"
 import { chooseTwentyQuestions } from "./Questions"
 import {clsx} from 'clsx'
@@ -12,40 +12,51 @@ export default function MockExam(){
     const [inExam, updateInExam] = useState(false)
     const [questions, updateQuestions] = useState(chooseTwentyQuestions())
     const [currentQuestionNumber, updateQuestionNumber] = useState(1)
-    const [timer, setTimer] = useState(30)
-    const [isTimerRunning, setIsTimerRunning] = useState(false)
+    const [inputTime, setInputTime] = useState(30)
+    const [secondsLeft, setSecondsLeft] = useState(30)
+    const [isRunning, setIsRunning] = useState(false)
+    const [hasStarted, setHasStarted] = useState(false)
+    const intervalRef = useRef(null)
 
     useEffect(()=>{
-        if ( timer > 0 && inExam){
-            setTimeout(()=>{
-                setTimer(prev=>prev-1)
+        if (isRunning && secondsLeft > 0){
+            intervalRef.current = setInterval(()=>{
+                setSecondsLeft((prev)=>prev-1)
             }, 1000)
-        } else if ( inExam && timer === 0){
-            setTimer(30)
-            updateQuestionNumber(prev=>prev+1)
-
         }
-    },[timer, inExam])
+        if (secondsLeft === 0){
+            clearInterval(intervalRef.current)
+            setIsRunning(false)
+        }
+        return () => clearInterval(intervalRef.current)
+    }, [isRunning, secondsLeft, currentQuestionNumber])
+
 
     function exitExam(){
         updateQuestionNumber(1)
         updateQuestions(chooseTwentyQuestions())
         updateInExam(false)
-        setTimer(30)
+    }
+
+    function nextQuestion(){
+        updateQuestionNumber(prev=>prev+1)
+        setSecondsLeft(30)
     }
 
     function toggleExam(){
         updateInExam(true)
+        setHasStarted(true)
+        setIsRunning(true)
+        setSecondsLeft(30)
     }
 
     const currentQuestion = [questions[currentQuestionNumber]]
-    console.log(currentQuestion)
 
     const displayCurrentQuestion = currentQuestion.map(question=>{
        
             const displayOptions = question.options.map((option, index)=>{
                 return (
-                    <button id = {index} key = {option} onClick = {()=>handleClickingAnswer(question, index)} 
+                    <button id = {index} key = {option} onClick = {()=>nextQuestion()} 
                     className = "Answer" 
                     >{option}</button>
                 )
@@ -92,7 +103,7 @@ export default function MockExam(){
         <>
         <section className = "TimerAndQuestionContainer">
             <section className = "TimerImageAndTimer">
-                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" /><p>{timer}</p>
+                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" /><p>{secondsLeft}</p>
             </section>
             <section className = "QuestionBoxMockExam">
                     {displayCurrentQuestion}
