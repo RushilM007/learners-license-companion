@@ -9,25 +9,36 @@ export default function MockExam(){
     //first do not worry about database and just create the basic interface 
     const navigate = useNavigate(); 
 
+    // "exam " refers to answering all the questions and then viewing performance report. 
     const [inExam, updateInExam] = useState(false);
+    
+    // starting from index 0, it goes from 0 to 19. each element in the array is a question from questions.js 
     const [questions, updateQuestions] = useState(chooseTwentyQuestions());
-    const [currentQuestionNumber, updateQuestionNumber] = useState(1);
+
+    //goes from 0 to 19, corresponds to index in questions state 
+    const [currentQuestionIndex, updateCurrentQuestionIndex] = useState(0);
+
+    //goes from 0 to 19, each key corresponds to question in questions. This stores all the user's answers
     const [answers, setAnswers] = useState({});
+
+    //for rendering the selected option in peach
+    const [currentQuestionSelectedOption, setCurrentQuestionSelectedOption] = useState({})
+
+    //for knowing if the "move to next question" button should be rendered or not. 
+    const [isAnswerSelected, setIsAnswerSelected] = useState(false)
+
+    // user has finished all 20 questions. 
+    const [examFinished, setExamFinished] = useState(false)
+
+    // all these correspond to the timer 
     const [secondsLeft, setSecondsLeft] = useState(30);
     const [isRunning, setIsRunning] = useState(false);
     const [hasStarted, setHasStarted] = useState(false);
-    const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
-    const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
     const intervalRef = useRef(null);
 
-    const answerKey = useMemo(()=>{
-        let answerkey1 = {};
-        for (let i = 0; i < 20; i++){
-            answerkey1[i] = questions[i].options[questions[i].correctAnswerIndex]
-        }
-        return answerkey1
-
-    }, [])
+    //keep track of right and wrong count 
+    const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
+    const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
 
     useEffect(()=>{
         if (isRunning && secondsLeft > 0){
@@ -37,26 +48,59 @@ export default function MockExam(){
         }
         if (secondsLeft === 0){
             clearInterval(intervalRef.current);
-            updateQuestionNumber(prev=>prev+1);
+            updateCurrentQuestionIndex(prev=>prev+1);
             setSecondsLeft(30);
         }
         return () => clearInterval(intervalRef.current);
-    }, [isRunning, secondsLeft, currentQuestionNumber])
-
+    }, [isRunning, secondsLeft, currentQuestionIndex])
 
     function exitExam(){
-        updateQuestionNumber(1);
+        updateCurrentQuestionIndex(0);
         updateQuestions(chooseTwentyQuestions());
         updateInExam(false);
+        setAnswers({})
+        setHasStarted(false);
+        setCorrectAnswerCount(0)
+        setWrongAnswerCount(0)
+        setExamFinished(false)
     }
 
-    function nextQuestion(index){
+
+    function handleClickingAnswer(index){
+        setIsAnswerSelected(true)
+        //once an answer is clicked, check if it is right or wrong then add the answers dict and then change the question 
         setAnswers({
             ...answers,
-            [currentQuestionNumber]: index
+            [currentQuestionIndex]: index
         })
-        updateQuestionNumber(prev=>prev+1);
-        setSecondsLeft(30);
+        setCurrentQuestionSelectedOption({
+            [index]: true
+        })
+
+    }
+
+    function nextQuestion(){
+        if (currentQuestionIndex === 19){
+            setExamFinished(true)
+            return;
+        }
+
+        setIsAnswerSelected(false)
+        setCurrentQuestionSelectedOption({})
+
+        if (questions[currentQuestionIndex].correctAnswerIndex === answers[currentQuestionIndex]){
+            setCorrectAnswerCount(prev=>prev+1)
+        } else {
+            setWrongAnswerCount(prev=>prev+1)
+            if (wrongAnswerCount === 7 ){
+            setExamFinished(true)
+        }
+        }
+        
+        if (currentQuestionIndex <= 18){
+            updateCurrentQuestionIndex(prev=>prev+1)
+        }
+        setSecondsLeft(30)
     }
 
     function toggleExam(){
@@ -64,16 +108,17 @@ export default function MockExam(){
         setHasStarted(true);
         setIsRunning(true);
         setSecondsLeft(30);
+        setExamFinished(false)
     }
 
-    const currentQuestion = [questions[currentQuestionNumber]];
+    const currentQuestion = currentQuestionIndex <= 19 ? [questions[currentQuestionIndex]]: null;
 
-    const displayCurrentQuestion = currentQuestion.map(question=>{
+    const displayCurrentQuestion = currentQuestionIndex <= 19 ? currentQuestion.map(question=>{
        
             const displayOptions = question.options.map((option, index)=>{
                 return (
-                    <button id = {index} key = {option} onClick = {()=>nextQuestion(index)}
-                    className = "Answer" 
+                    <button id = {index} key = {option} onClick = {()=>handleClickingAnswer(index)}
+                    className = {clsx("Answer", currentQuestionSelectedOption[index]===true&&"AnswerSelectedMockExam")}
                     >{option}</button>
                 )
             })
@@ -85,9 +130,11 @@ export default function MockExam(){
                 <div className = "AnswersBox">
                     {displayOptions}
                 </div>
+                {isAnswerSelected && <button key = {2} className = "NextButton" onClick = {()=>nextQuestion()}><img className = "NavigateMockExamImage" src = "../assets/images/icons/right-arrow.png" alt = "next button" /></button>}
                 </section>
             )
-        })
+        }): null
+    
 
     return (
         <>
@@ -98,7 +145,7 @@ export default function MockExam(){
                         altOne = "go to home screen image"
                         functionOne = {()=>navigate("/HomeScreen")}
                     />}
-                    {inExam && <Header 
+                    {(inExam && !examFinished) && <Header 
                         title = "Mock Exam"
                         imagePathOne = "../assets/images/icons/back.png"
                         altOne = "back image"
@@ -115,17 +162,31 @@ export default function MockExam(){
             <button className = "StartExamButton" onClick = {toggleExam}>Start Exam</button>
         </div>}
 
-        {inExam && 
+        {(inExam && !examFinished) &&
         <>
-        <section className = "TimerAndQuestionContainer">
-            <section className = "TimerImageAndTimer">
-                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" /><p className = {secondsLeft <=5?"LessThanFiveSecsLeft":"SecondsLeft"}>{secondsLeft}</p>
+        <section className = "TimerAndQuestionAndRightWrongContainer">
+            <section className = "TimerImageAndTimerAndRightWrong">
+                <img className = "TimerImage" src = "../assets/images/icons/stopwatch.png" alt = "timer" />
+                <p className = {secondsLeft <=5?"LessThanFiveSecsLeft":"SecondsLeft"}>{secondsLeft}</p>
+                <img id = "CheckMarkMockExam" src = "../assets/images/icons/check.png" alt = "check mark " />
+                <p className = "CorrectAnswerCountMockExam">{correctAnswerCount}</p>
+                <img id = "XMarkMockExam" src = "../assets/images/icons/remove.png" alt = "x mark" />
+                <p className = "WrongAnswerCountMockExam">{wrongAnswerCount}</p>
             </section>
+        
             <section className = "QuestionBoxMockExam">
                     {displayCurrentQuestion}
             </section>
+
         </section>
         </>}
+        {examFinished && 
+            <>
+            <h1>Finished</h1>
+            <button onClick = {()=>exitPerformanceReportScreen()}>Exit</button>
+            </>
+
+        }
         </>
     )
 }
