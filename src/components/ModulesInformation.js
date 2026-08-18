@@ -17,12 +17,7 @@ export const ModulesInformation = [
         image: "../assets/images/icons/chatbot.png",
         navigate: "/Chatbot"
     },
-    {
-        name: "Analytics",
-        description: "View past mock exam analytics to create an action plan for improvement on weak concepts.",
-        image: "../assets/images/icons/analysis.png",
-        navigate: "/Analytics"
-    }
+    
 ]
 
   

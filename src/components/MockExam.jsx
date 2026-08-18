@@ -4,6 +4,7 @@ import React, {useState, useEffect, useRef, useMemo} from "react"
 import { useNavigate } from "react-router-dom"
 import { chooseTwentyQuestions } from "./Questions"
 import {clsx} from 'clsx'
+import { getFeedbackFromClaude } from "./MockExamAi"
 
 export default function MockExam(){
     const navigate = useNavigate(); 
@@ -39,6 +40,10 @@ export default function MockExam(){
     const [correctAnswerCount, setCorrectAnswerCount] = useState(0);
     const [wrongAnswerCount, setWrongAnswerCount] = useState(0);
 
+    // to store feedback 
+    const [feedback, setFeedback] = useState("")
+
+
     useEffect(()=>{
         if (isRunning && secondsLeft > 0){
             intervalRef.current = setInterval(()=>{
@@ -52,6 +57,11 @@ export default function MockExam(){
         }
         return () => clearInterval(intervalRef.current);
     }, [isRunning, secondsLeft, currentQuestionIndex])
+
+    async function getFeedback(){
+        const feedback = await getFeedbackFromClaude(questions, answers)
+        setFeedback(feedback)
+    }
 
     function returnToMockExamStartScreen(){
 
@@ -197,7 +207,6 @@ export default function MockExam(){
             <button className = "ReturnToStartScreen" onClick = {()=>returnToMockExamStartScreen()}>Return to Start Screen</button>
             </section>
             </>
-
         }
         </>
     )
