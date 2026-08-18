@@ -9,8 +9,8 @@ export default function MockExam(){
     //first do not worry about database and just create the basic interface 
     const navigate = useNavigate(); 
 
-    // "exam " refers to answering all the questions and then viewing performance report. 
-    const [inExam, updateInExam] = useState(false);
+    // being "outside start screen" refers to answering all the questions and then viewing performance report. 
+    const [outsideStartScreen, setOutsideStartScreen] = useState(false);
     
     // starting from index 0, it goes from 0 to 19. each element in the array is a question from questions.js 
     const [questions, updateQuestions] = useState(chooseTwentyQuestions());
@@ -27,8 +27,8 @@ export default function MockExam(){
     //for knowing if the "move to next question" button should be rendered or not. 
     const [isAnswerSelected, setIsAnswerSelected] = useState(false)
 
-    // user has finished all 20 questions. 
-    const [examFinished, setExamFinished] = useState(false)
+    // user has finished all 20( 0 to 19 indexes) questions. 
+    const [questionsFinished, setQuestionsFinished] = useState(false)
 
     // all these correspond to the timer 
     const [secondsLeft, setSecondsLeft] = useState(30);
@@ -57,12 +57,13 @@ export default function MockExam(){
     function exitExam(){
         updateCurrentQuestionIndex(0);
         updateQuestions(chooseTwentyQuestions());
-        updateInExam(false);
+        setOutsideStartScreen(false);
         setAnswers({})
         setHasStarted(false);
         setCorrectAnswerCount(0)
         setWrongAnswerCount(0)
-        setExamFinished(false)
+        setQuestionsFinished(false)
+        setCurrentQuestionSelectedOption({})
     }
 
 
@@ -80,11 +81,13 @@ export default function MockExam(){
     }
 
     function nextQuestion(){
+        //end exam if on the 19th index (20th question)
         if (currentQuestionIndex === 19){
-            setExamFinished(true)
+            setQuestionsFinished(true)
             return;
         }
 
+        //reset IsAnswerSelected and currentQuestionSelectedOption for next question. 
         setIsAnswerSelected(false)
         setCurrentQuestionSelectedOption({})
 
@@ -93,7 +96,7 @@ export default function MockExam(){
         } else {
             setWrongAnswerCount(prev=>prev+1)
             if (wrongAnswerCount === 7 ){
-            setExamFinished(true)
+            setQuestionsFinished(true)
         }
         }
         
@@ -104,7 +107,7 @@ export default function MockExam(){
     }
 
     function toggleExam(){
-        updateInExam(true);
+        setOutsideStartScreen(true);
         setHasStarted(true);
         setIsRunning(true);
         setSecondsLeft(30);
@@ -139,13 +142,13 @@ export default function MockExam(){
     return (
         <>
         <header className = "HomeScreenHeader">
-                    {!inExam && <Header 
+                    {!outsideStartScreen && <Header 
                         title = "Mock Exam"
                         imagePathOne = "../assets/images/icons/home.png"
                         altOne = "go to home screen image"
                         functionOne = {()=>navigate("/HomeScreen")}
                     />}
-                    {(inExam && !examFinished) && <Header 
+                    {(outsideStartScreen && !questionsFinished) && <Header 
                         title = "Mock Exam"
                         imagePathOne = "../assets/images/icons/back.png"
                         altOne = "back image"
@@ -157,12 +160,12 @@ export default function MockExam(){
 
         </header>
 
-        {!inExam && <div className = "ExamPreStartScreen">
+        {!outsideStartScreen && <div className = "ExamPreStartScreen">
             <p>There will be 20 questions. You get 30 seconds to answer each question. You need atleast a 12/20 to pass.</p>
             <button className = "StartExamButton" onClick = {toggleExam}>Start Exam</button>
         </div>}
 
-        {(inExam && !examFinished) &&
+        {(outsideStartScreen && !questionsFinished) &&
         <>
         <section className = "TimerAndQuestionAndRightWrongContainer">
             <section className = "TimerImageAndTimerAndRightWrong">
@@ -180,10 +183,15 @@ export default function MockExam(){
 
         </section>
         </>}
-        {examFinished && 
+        {questionsFinished && 
             <>
-            <h1>Finished</h1>
-            <button onClick = {()=>exitPerformanceReportScreen()}>Exit</button>
+            <section className = "PerformanceReport">
+            <h1>Performance Report</h1>
+            <h4> You got {wrongAnswerCount} wrong. </h4>
+            <h4> You got {correctAnswerCount} right. </h4>
+            {wrongAnswerCount <8 ? "You passed": "You failed"}
+            <button className = "ReturnToStartScreen" onClick = {()=>exitExam()}>Return to Start Screen</button>
+            </section>
             </>
 
         }
