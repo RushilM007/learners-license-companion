@@ -6,7 +6,6 @@ import { chooseTwentyQuestions } from "./Questions"
 import {clsx} from 'clsx'
 
 export default function MockExam(){
-    //first do not worry about database and just create the basic interface 
     const navigate = useNavigate(); 
 
     // being "outside start screen" refers to answering all the questions and then viewing performance report. 
@@ -54,7 +53,13 @@ export default function MockExam(){
         return () => clearInterval(intervalRef.current);
     }, [isRunning, secondsLeft, currentQuestionIndex])
 
-    function exitExam(){
+    function returnToMockExamStartScreen(){
+
+        const confirmed = window.confirm("Confirm that you would like to return to the start screen");
+        if (!confirmed){
+            return;
+        }
+
         updateCurrentQuestionIndex(0);
         updateQuestions(chooseTwentyQuestions());
         setOutsideStartScreen(false);
@@ -81,12 +86,7 @@ export default function MockExam(){
     }
 
     function nextQuestion(){
-        //end exam if on the 19th index (20th question)
-        if (currentQuestionIndex === 19){
-            setQuestionsFinished(true)
-            return;
-        }
-
+       
         //reset IsAnswerSelected and currentQuestionSelectedOption for next question. 
         setIsAnswerSelected(false)
         setCurrentQuestionSelectedOption({})
@@ -95,15 +95,19 @@ export default function MockExam(){
             setCorrectAnswerCount(prev=>prev+1)
         } else {
             setWrongAnswerCount(prev=>prev+1)
-            if (wrongAnswerCount === 7 ){
-            setQuestionsFinished(true)
         }
-        }
-        
         if (currentQuestionIndex <= 18){
             updateCurrentQuestionIndex(prev=>prev+1)
         }
         setSecondsLeft(30)
+        
+        //end exam if on the 19th index (20th question)
+
+        if (currentQuestionIndex === 19){
+            setQuestionsFinished(true)
+            return;
+        }
+
     }
 
     function toggleExam(){
@@ -152,7 +156,7 @@ export default function MockExam(){
                         title = "Mock Exam"
                         imagePathOne = "../assets/images/icons/back.png"
                         altOne = "back image"
-                        functionOne = {()=>exitExam()}
+                        functionOne = {()=>returnToMockExamStartScreen()}
                         imagePathTwo = "../assets/images/icons/home.png"
                         altTwo = "go to home screen image"
                         functionTwo = {()=>navigate("/HomeScreen")}
@@ -183,14 +187,14 @@ export default function MockExam(){
 
         </section>
         </>}
-        {questionsFinished && 
+        {(questionsFinished &&  outsideStartScreen) &&
             <>
             <section className = "PerformanceReport">
             <h1>Performance Report</h1>
             <h4> You got {wrongAnswerCount} wrong. </h4>
             <h4> You got {correctAnswerCount} right. </h4>
             {wrongAnswerCount <8 ? "You passed": "You failed"}
-            <button className = "ReturnToStartScreen" onClick = {()=>exitExam()}>Return to Start Screen</button>
+            <button className = "ReturnToStartScreen" onClick = {()=>returnToMockExamStartScreen()}>Return to Start Screen</button>
             </section>
             </>
 
