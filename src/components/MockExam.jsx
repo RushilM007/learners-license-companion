@@ -5,6 +5,10 @@ import { useNavigate } from "react-router-dom"
 import { chooseTwentyQuestions } from "./Questions"
 import {clsx} from 'clsx'
 import { getFeedbackFromClaude } from "./MockExamAi"
+import ReactMarkdown from "react-markdown"
+import { auth, db } from "./firebase"
+import { onAuthStateChanged } from "firebase/auth"
+import { doc, getDoc, updateDoc } from "firebase/firestore"
 
 export default function MockExam(){
     const navigate = useNavigate(); 
@@ -43,7 +47,27 @@ export default function MockExam(){
     // to store feedback 
     const [feedback, setFeedback] = useState("")
 
+    const [bookmarkData, updateBookmarkData] = useState({})
+    const [dataLoaded, setDataLoaded] = useState(false)
 
+
+    useEffect(()=>{
+            const unsub = onAuthStateChanged(auth, (user)=>{
+                if (user){
+                    setDataLoaded(false)
+                    ReloadDataInDB()
+                }
+            })
+            //once react unmounts unsub 
+            return () => unsub()
+        },[])
+
+    useEffect(()=>{
+        // everytime a bookmark is removed or added, log that in the DB. 
+        logBookmarkChanges()
+    },[bookmarkData])
+    
+    
     useEffect(()=>{
         if (isRunning && secondsLeft > 0){
             intervalRef.current = setInterval(()=>{
@@ -58,8 +82,48 @@ export default function MockExam(){
         return () => clearInterval(intervalRef.current);
     }, [isRunning, secondsLeft, currentQuestionIndex])
 
+    useEffect(()=>{
+        async function checkIfEightAreWrong(){
+                if (wrongAnswerCount === 8 ){
+                setQuestionsFinished(true)
+                await getFeedback()
+            }
+        }
+        checkIfEightAreWrong()
+    },[wrongAnswerCount])
+
+    async function ReloadDataInDB(){
+        const user = auth.currentUser
+        const docRef = doc(db,'Users', user.uid);
+        const docSnap = await getDoc(docRef)
+
+        updateBookmarkData(docSnap.data().bookmarkData)
+        setDataLoaded(true)
+    }
+
+    async function logBookmarkChanges(){
+        if (!dataLoaded){return}
+        const user = auth.currentUser;
+        const docRef=doc(db,"Users", user.uid);
+        const data = {
+            bookmarkData:bookmarkData
+        }
+        await updateDoc(docRef, data)
+    }
+    
+
     async function getFeedback(){
-        const feedback = await getFeedbackFromClaude(questions, answers)
+        //this array is structured in a way that it is simpler for claude to analyze results. 
+        let ArrayForClaude = []
+
+        for (let i = 0; i <= Object.keys(answers).length-1; i ++){
+            ArrayForClaude.push({
+                category: questions[i].category,
+                question: questions[i].question,
+                isCorrect: answers[i]===questions[i].correctAnswerIndex
+            })
+        }
+        const feedback = await getFeedbackFromClaude(ArrayForClaude)
         setFeedback(feedback)
     }
 
@@ -79,6 +143,7 @@ export default function MockExam(){
         setWrongAnswerCount(0)
         setQuestionsFinished(false)
         setCurrentQuestionSelectedOption({})
+        setFeedback("")
     }
 
 
@@ -95,7 +160,7 @@ export default function MockExam(){
 
     }
 
-    function nextQuestion(){
+    async function nextQuestion(){
        
         //reset IsAnswerSelected and currentQuestionSelectedOption for next question. 
         setIsAnswerSelected(false)
@@ -110,27 +175,42 @@ export default function MockExam(){
             updateCurrentQuestionIndex(prev=>prev+1)
         }
         setSecondsLeft(30)
-        
-        //end exam if on the 19th index (20th question)
+        console.log(wrongAnswerCount)
 
         if (currentQuestionIndex === 19){
             setQuestionsFinished(true)
-            return;
+            await getFeedback()
         }
 
     }
 
+    
     function toggleExam(){
         setOutsideStartScreen(true);
         setHasStarted(true);
         setIsRunning(true);
         setSecondsLeft(30);
-        setExamFinished(false)
+        setQuestionsFinished(false)
     }
 
     const currentQuestion = currentQuestionIndex <= 19 ? [questions[currentQuestionIndex]]: null;
 
     const displayCurrentQuestion = currentQuestionIndex <= 19 ? currentQuestion.map(question=>{
+                function toggleBookmark(){
+            let newData;
+            if (bookmarkData[question.id]===null){
+                newData = true
+            } else if (bookmarkData[question.id]===true){
+                newData = false
+            } else if (bookmarkData[question.id]===false){
+                newData = true
+            }
+            updateBookmarkData({
+                    ...bookmarkData,
+                    [question.id]:  newData
+                })   
+                } 
+
        
             const displayOptions = question.options.map((option, index)=>{
                 return (
@@ -142,6 +222,7 @@ export default function MockExam(){
             
             return (
                 <section key = {1}>
+                <button key = {2} onClick = {toggleBookmark} className = "BookmarkButton"><img className = "Bookmark" src = {(bookmarkData[question.id]===false|| bookmarkData[question.id]===null)?"../assets/images/icons/bookmark-white.png":"../assets/images/icons/bookmark.png"} alt = "bookmark unchecked"></img></button>
                 <p key = {question.question} className = "Question">{question.question}</p>
                 {question.image!==null && <div id = "QuestionImageContainer"><img key = {question.image} className = "QuestionImage" src = {question.image} alt = "image, part of question" /></div>}
                 <div className = "AnswersBox">
@@ -175,7 +256,9 @@ export default function MockExam(){
         </header>
 
         {!outsideStartScreen && <div className = "ExamPreStartScreen">
-            <p>There will be 20 questions. You get 30 seconds to answer each question. You need atleast a 12/20 to pass.</p>
+            <p>There will be 20 questions. You get 30 seconds to answer each question. You need atleast a 12/20 to pass. You 
+                automatically fail if you get 8 wrong. 
+            </p>
             <button className = "StartExamButton" onClick = {toggleExam}>Start Exam</button>
         </div>}
 
@@ -201,10 +284,10 @@ export default function MockExam(){
             <>
             <section className = "PerformanceReport">
             <h1>Performance Report</h1>
-            <h4> You got {wrongAnswerCount} wrong. </h4>
-            <h4> You got {correctAnswerCount} right. </h4>
-            {wrongAnswerCount <8 ? "You passed": "You failed"}
-            <button className = "ReturnToStartScreen" onClick = {()=>returnToMockExamStartScreen()}>Return to Start Screen</button>
+            <p>You got {correctAnswerCount} right. You got {wrongAnswerCount} wrong. {wrongAnswerCount <8 ? "You passed": "You failed"}</p>
+            <h5>Claude's Feedback: </h5>
+            <p><ReactMarkdown>{feedback===""?"Claude is generating your feedback...":feedback}</ReactMarkdown></p>
+            {feedback && <button className = "ReturnToStartScreen" onClick = {()=>returnToMockExamStartScreen()}>Return to Start Screen</button>}
             </section>
             </>
         }

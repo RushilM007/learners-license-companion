@@ -51,10 +51,12 @@ body{
 }
 
 #ModuleGrid{
-    padding-left: 250px;
-    padding-top: 150px;
+    /* padding-left: 250px; */
+    padding-top: 150px; 
     display:flex;
     flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
 }
 
 .ModuleText{
