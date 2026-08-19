@@ -1,6 +1,6 @@
-# React + Vite
+# About the App!
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Preparing for the Indian learner's license exam with just the official practice PDF isnt the most amazing experience. This app turns the practice questions into an interactive questionbank where you can practice questions based on category and can bookmark difficult questions. It also has a mock exam that you can take in the official format, and a chatbot that can answer your conceptual queries. 
 
 Currently, two official plugins are available:
 
