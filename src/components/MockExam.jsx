@@ -77,6 +77,7 @@ export default function MockExam(){
         if (secondsLeft === 0){
             clearInterval(intervalRef.current);
             updateCurrentQuestionIndex(prev=>prev+1);
+            setWrongAnswerCount(prev=>prev+1)
             setSecondsLeft(30);
         }
         return () => clearInterval(intervalRef.current);

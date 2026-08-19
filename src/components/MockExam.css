@@ -128,3 +128,13 @@
     font-size: 15px;
     cursor: pointer;
 }
+
+@media (max-width: 480px){
+    .QuestionBoxMockExam{
+        margin-top: 50px;
+    }
+    .AnswerSelectedMockExam{
+        font-size:12px;
+    }
+
+}
