@@ -79,8 +79,7 @@ body{
 
 .AuthErrorMessage{
     font-size: 13px;
-    border-radius: 8px;
-    background:rgb(249,227,227);
+    border:none;
     padding: 10px 14px;
     color:rgb(178,54,54);
     font-weight: 500;
@@ -94,8 +93,7 @@ body{
 }
 
 .AuthSuccessMessage{
-    border-radius: 8px;
-    background:#A8DCAB;
+    border:none;
     padding: 10px 14px;
     color:#198450;
     font-weight: 500;
