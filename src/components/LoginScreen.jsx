@@ -12,6 +12,7 @@ export default function LoginScreen(){
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    //for react router. 
     const navigate = useNavigate()
    
     async function onSubmit(e){
