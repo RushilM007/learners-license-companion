@@ -2,7 +2,7 @@ import React from "react"
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import './AuthScreens.css'
 import {useState} from 'react'
-import {signInWithEmailAndPassword} from "firebase/auth"
+import {browserLocalPersistence, setPersistence, signInWithEmailAndPassword} from "firebase/auth"
 import {auth} from "./firebase"
 import SignInWithGoogle from "./SignInWithGoogle.jsx"
 
@@ -18,6 +18,7 @@ export default function LoginScreen(){
     async function onSubmit(e){
         e.preventDefault();
         try{
+            await setPersistence(auth,browserLocalPersistence)
             await signInWithEmailAndPassword(auth,email,password);
             navigate("/HomeScreen")
         } catch (error){
