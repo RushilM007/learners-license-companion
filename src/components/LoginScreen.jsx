@@ -31,7 +31,7 @@ export default function LoginScreen(){
         <main>
             <div id = "AuthCard">
                 <h3 id = "AuthHeader">Sign in to Learner's License Companion</h3>
-                <form id = "AuthForm">
+                <form id = "AuthForm" onClick = {onSubmit}>
                     <label className = "AuthLabel" htmlFor="email"> Email Address </label>
                     
                     <input 
@@ -54,7 +54,7 @@ export default function LoginScreen(){
 
                     <Link to="/ForgotPassword" className = "AuthHyperLink">Forgot Password?</Link>
 
-                    <button className = "AuthButton" onClick = {onSubmit}>Sign In</button>
+                    <button className = "AuthButton" type = "submit" >Sign In</button>
 
                     <p className = "AuthAlternateOptionLiner">Don't have an account? <Link to="/SignUp" className = "AuthHyperLink">Sign Up</Link></p>
 
