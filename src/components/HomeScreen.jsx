@@ -19,6 +19,10 @@ export default function HomeScreen(){
         navigate("/")
     }
 
+    function goToSettings(){
+        navigate("/Settings")
+    }
+
     const HomeScreenModuleChips = ModulesInformation.map((module, index)=>{
         return (
             <button key = {module.navigate} className = "ModuleButton" onClick = {()=>navigate(module.navigate)}>
@@ -39,6 +43,7 @@ export default function HomeScreen(){
                 title = "Learner's License Companion" 
                 imagePathOne = "../assets/images/icons/setting.png"
                 altOne = "settings icon"
+                functionOne = {()=>goToSettings()}
                 imagePathTwo = "../assets/images/icons/logout.png"
                 altTwo = "logout icon"
                 functionTwo = {()=>logout()}
@@ -49,6 +54,7 @@ export default function HomeScreen(){
         <div id = "ModuleGrid">
             {HomeScreenModuleChips}
         </div>
+
         </>
     )
 }

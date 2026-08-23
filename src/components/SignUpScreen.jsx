@@ -35,6 +35,7 @@ export default function SignUpScreen(){
         try{
             await createUserWithEmailAndPassword(auth,email,confirmPassword);
             const user = auth.currentUser;
+
             
             if (user){
                 await setDoc(doc(db,"Users",user.uid),{

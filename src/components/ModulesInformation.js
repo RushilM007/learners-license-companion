@@ -16,8 +16,7 @@ export const ModulesInformation = [
         description: "Ask any conceptual questions to the companion chatbot",
         image: "../assets/images/icons/chatbot.png",
         navigate: "/Chatbot"
-    },
-    
+    }
 ]
 
   

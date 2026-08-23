@@ -9,6 +9,8 @@ import ForgotPasswordScreen from "./components/ForgotPasswordScreen.jsx"
 import Questionbank from './components/Questionbank.jsx'
 import Chatbot from './components/Chatbot.jsx'
 import MockExam from './components/MockExam.jsx';
+import Settings from './components/Settings.jsx';
+import Credits from './components/Credits.jsx';
 
 const router = createBrowserRouter([
   {path:"/", element: <LoginScreen />},
@@ -17,7 +19,9 @@ const router = createBrowserRouter([
   {path:"/ForgotPassword", element: <ForgotPasswordScreen />},
   {path:"/Questionbank", element: <Questionbank />},
   {path:"/Chatbot", element: <Chatbot />},
-  {path:"/MockExam", element: <MockExam />}
+  {path:"/MockExam", element: <MockExam />},
+  {path: "/Settings", element: <Settings />},
+  {path: "/Credits", element: <Credits />}
 
 ])
 

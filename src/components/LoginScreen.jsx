@@ -18,7 +18,6 @@ export default function LoginScreen(){
     async function onSubmit(e){
         e.preventDefault();
         try{
-            await setPersistence(auth,browserLocalPersistence)
             await signInWithEmailAndPassword(auth,email,password);
             navigate("/HomeScreen")
         } catch (error){
