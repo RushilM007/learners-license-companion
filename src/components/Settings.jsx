@@ -34,6 +34,7 @@ export default function Settings(){
             return}
         try {
             if (signedInwithGoogle){
+                window.alert("Please confirm your Google account in the following popup to continue with the deletion.")
                 await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider())
             } else {
                 const password = window.prompt("Enter your password to confirm:")

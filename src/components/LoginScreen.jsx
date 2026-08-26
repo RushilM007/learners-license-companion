@@ -1,8 +1,8 @@
-import React from "react"
+import React, {useEffect} from "react"
 import { Link, Navigate, useNavigate } from "react-router-dom"
 import './AuthScreens.css'
 import {useState} from 'react'
-import {browserLocalPersistence, setPersistence, signInWithEmailAndPassword} from "firebase/auth"
+import {browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword} from "firebase/auth"
 import {auth} from "./firebase"
 import SignInWithGoogle from "./SignInWithGoogle.jsx"
 
@@ -11,13 +11,30 @@ export default function LoginScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [checkingAuth, setCheckingAuth] = useState(true)
+
 
     //for react router. 
     const navigate = useNavigate()
+
+    useEffect(()=>{
+        const unsub = onAuthStateChanged(auth, (user)=>{
+            if (user){
+                navigate("/HomeScreen")
+            } else {
+                setCheckingAuth(false)
+            }
+        })
+        return () => unsub()
+    }, [])
+
+    if (checkingAuth) return null
+
    
     async function onSubmit(e){
         e.preventDefault();
         try{
+            await setPersistence(auth, browserLocalPersistence)
             await signInWithEmailAndPassword(auth,email,password);
             navigate("/HomeScreen")
         } catch (error){
