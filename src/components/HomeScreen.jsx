@@ -14,6 +14,7 @@ export default function HomeScreen(){
     //used to make react router work 
     const navigate = useNavigate()
 
+
     function logout(){
         auth.signOut()
         navigate("/")

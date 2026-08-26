@@ -12,7 +12,6 @@ import MockExam from './components/MockExam.jsx';
 import Settings from './components/Settings.jsx';
 import Credits from './components/Credits.jsx';
 import ChangeEmail from './components/ChangeEmail.jsx';
-import ChangePassword from './components/ChangePassword.jsx';
 
 const router = createBrowserRouter([
   {path:"/", element: <LoginScreen />},
@@ -24,8 +23,7 @@ const router = createBrowserRouter([
   {path:"/MockExam", element: <MockExam />},
   {path: "/Settings", element: <Settings />},
   {path: "/Credits", element: <Credits />},
-  {path: "/ChangeEmail", element: <ChangeEmail />},
-  {path: "/ChangePassword", element: <ChangePassword />}
+  {path: "/ChangeEmail", element: <ChangeEmail />}
 
 ])
 

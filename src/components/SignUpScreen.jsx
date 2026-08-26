@@ -1,7 +1,7 @@
 import {Navigate, Link, useNavigate, useFormAction} from "react-router-dom"
 import './AuthScreens.css'
 import React, {useState} from 'react'
-import {createUserWithEmailAndPassword} from "firebase/auth"
+import {createUserWithEmailAndPassword, sendEmailVerification} from "firebase/auth"
 import {auth, db} from "./firebase"
 import {setDoc, doc } from "firebase/firestore"
 import SignInWithGoogle from "./SignInWithGoogle"
@@ -35,7 +35,6 @@ export default function SignUpScreen(){
         try{
             await createUserWithEmailAndPassword(auth,email,confirmPassword);
             const user = auth.currentUser;
-
             
             if (user){
                 await setDoc(doc(db,"Users",user.uid),{
@@ -54,6 +53,7 @@ export default function SignUpScreen(){
                 return;
             }
         navigate("/")
+
     }
 
     return (

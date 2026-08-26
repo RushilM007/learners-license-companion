@@ -2,8 +2,9 @@ import React, {useState, useEffect} from "react"
 import Header from "./Header"
 import { useNavigate } from "react-router-dom"
 import "./Settings.css"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "./firebase"
+import { deleteUser, onAuthStateChanged, reauthenticateWithCredential, sendPasswordResetEmail, EmailAuthProvider, reauthenticateWithPopup, GoogleAuthProvider } from "firebase/auth"
+import { auth, db } from "./firebase"
+import { deleteDoc, doc } from "firebase/firestore"
 
 export default function Settings(){
     const [signedInwithGoogle, setSignedInWithGoogle] = useState(false)
@@ -22,6 +23,34 @@ export default function Settings(){
         return () => unsubscribe()
     }, [])
 
+    function changeThePassword(){
+        sendPasswordResetEmail(auth,auth.currentUser.email)
+        window.alert("A password reset link has been sent to your email")
+    }
+
+    async function deleteTheAccount(){
+        let yesOrNo = window.confirm("Confirm that you would like to delete the account.")
+        if (!yesOrNo){
+            return}
+        try {
+            if (signedInwithGoogle){
+                await reauthenticateWithPopup(auth.currentUser, new GoogleAuthProvider())
+            } else {
+                const password = window.prompt("Enter your password to confirm:")
+                if (!password) return;
+                const credential = EmailAuthProvider.credential(auth.currentUser.email, password)
+                await reauthenticateWithCredential(auth.currentUser, credential)
+            }
+
+            await deleteDoc(doc(db, "Users", auth.currentUser.uid))
+            await deleteUser(auth.currentUser)
+            navigate("/")
+        } catch (err) {
+            window.alert(err.message)
+        }
+    }
+
+
     return (
         <>
         <header className = "HomeScreenHeader">
@@ -35,8 +64,10 @@ export default function Settings(){
 
         <div className = "OptionsInSettings">
             <button className = "SettingOptionButton" onClick = {()=>navigate("/Credits")}>Credits</button>
-            {!signedInwithGoogle && <button className = "SettingOptionButton" onClick = {()=>navigate('/ChangePassword')}>Change Password</button>}
+            {!signedInwithGoogle && <button className = "SettingOptionButton" onClick = {changeThePassword}>Change Password</button>}
             {!signedInwithGoogle && <button className = "SettingOptionButton" onClick = {()=>navigate("/ChangeEmail")}>Change Email</button>}
+            <button className = "SettingOptionButton" onClick = {deleteTheAccount}>Delete Account</button>
+
         </div>
         </>
     )
