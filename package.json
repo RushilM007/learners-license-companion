@@ -12,7 +12,9 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
     "@react-oauth/google": "^0.13.5",
+    "@supabase/supabase-js": "^2.112.4",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
     "firebase": "^12.16.0",
     "openai": "^7.5.0",
     "react": "^19.2.7",
