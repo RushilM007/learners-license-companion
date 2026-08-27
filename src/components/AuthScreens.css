@@ -135,6 +135,7 @@ body{
     #AppDescription{
         width: 90%;
         font-size: 10px;
+        margin-top: 20px;
     }
 }
 
