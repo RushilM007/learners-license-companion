@@ -20,7 +20,7 @@ body{
 }
 
 #AuthHeader{
-    margin-bottom:90px;
+    margin-bottom:10px;
     height: 29px;
     width: 100%;
     font-size: 24px;
@@ -120,6 +120,14 @@ body{
 #SignInWithGoogleTag{
     margin-left:20px;
 }
+
+#AppDescription{
+    margin-bottom: 70px;
+    width: 30%;
+    text-align:center;
+
+}
+
 @media (max-width: 480px){
     #SignupCardHeader{
         margin-bottom:40px;

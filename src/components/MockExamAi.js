@@ -20,7 +20,7 @@ Your job is to respond exactly in this structure and do nothing else:
 
 IMPORTANT: Do not tally anything, or count anything. do not do any arithmetic operations like this. 
 
-Your entire response should be around 65 words.No more than that please.
+Your entire response should be around 40 words.No more than that please.
 `
 
 

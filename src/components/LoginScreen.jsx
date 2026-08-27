@@ -11,7 +11,7 @@ export default function LoginScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [checkingAuth, setCheckingAuth] = useState(true)
+    const [checkingAuth, setCheckingAuth] = useState(true);
 
 
     //for react router. 
@@ -47,6 +47,9 @@ export default function LoginScreen(){
         <main>
             <div id = "AuthCard">
                 <h3 id = "AuthHeader">Sign in to Learner's License Companion</h3>
+                <p id = "AppDescription">Get access to a comprehensive platform that includes an interactive questionbank, mock exam interface and a 
+                    helpful chatbot that clarifies coneptual doubts!
+                </p>
                 <form id = "AuthForm">
                     <label className = "AuthLabel" htmlFor="email"> Email Address </label>
                     
