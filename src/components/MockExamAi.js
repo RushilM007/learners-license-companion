@@ -25,21 +25,17 @@ Your entire response should be around 40 words.No more than that please.
 
 
 export async function getFeedbackFromClaude(userQuestionAnswerData) {
-    const anthropic = new Anthropic({
-        apiKey:import.meta.env.VITE_ANTHROPIC_API_KEY,
-        dangerouslyAllowBrowser: true,
+
+    const response = await fetch("/api/feedback",{
+        method: "POST",
+        headers:{
+            "Content-Type": "application/json"
+
+        },
+        body: JSON.stringify(userQuestionAnswerData),
     })
 
-    const results = JSON.stringify(userQuestionAnswerData);
-
-    const msg = await anthropic.messages.create({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: [
-            { role: "user", content: `Here are my exam results: ${results}. Please give me feedback.`},
-        ],
-    });
-    return msg.content[0].text
+    const data = await response.json()
+    return data.feedback
 }
 

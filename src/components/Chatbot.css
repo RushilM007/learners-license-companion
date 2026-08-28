@@ -40,6 +40,10 @@
 
 }
 
+.ChatBotDescription{
+    text-align:center;
+}
+
 @media (max-width: 450px){
     .ChatBotResponse{
         width: 90%

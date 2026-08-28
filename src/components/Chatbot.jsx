@@ -11,14 +11,12 @@ export default function Chatbot(){
     const [response, updateResponse] = useState("")
     const [query, setQuery] = useState("")
     const [loading, setLoading] = useState(false)
-    const navigate = useNavigate()
 
-    // const query = "Jammin' in the Big Easy";
+    const navigate = useNavigate()
 
     function handleSubmitQuery(){
         setLoading(true)
         main(query)
-
     }
 
     async function main(input){
@@ -81,6 +79,7 @@ export default function Chatbot(){
             />
         </header>
         
+        <p className = "ChatBotDescription">Get your concept-related questions clarified!</p>
         <section className = "ChatBotUI">
             <textarea onChange = {(e)=>setQuery(e.target.value)} placeholder= "How can I help?" className = "ChatBotInput"></textarea>
             <button onClick = {handleSubmitQuery} className = "ChatBotSendButton"><img className = "ChatBotSendImage" src = "../assets/images/icons/paper-plane.png"></img></button>
