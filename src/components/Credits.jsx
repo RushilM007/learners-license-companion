@@ -34,6 +34,7 @@ export default function Credits(){
             <a href="https://www.flaticon.com/free-icons/settings" title="settings icons">Settings icons created by logisstudio - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/timer" title="timer icons">Timer icons created by Magnific - Flaticon</a>
             <a href="https://www.flaticon.com/free-icons/pencil" title="pencil icons">Pencil icons created by Magnific - Flaticon</a>
+            <a href="https://www.flaticon.com/free-icons/send" title="send icons">Send icons created by Pixel perfect - Flaticon</a>
         </div>
 
         </>
