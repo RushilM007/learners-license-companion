@@ -3,9 +3,6 @@ import Header from "./Header"
 import React, {useState} from "react"
 import "./Chatbot.css"
 
-const { openai, supabase } = await import('./RAGBotConfig.js')
-const { default: podcasts } = await import('./RAGBotContent.js')
-
 export default function Chatbot(){
     
     const [response, updateResponse] = useState("")
