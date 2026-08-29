@@ -229,7 +229,7 @@ export default function MockExam(){
                 <div className = "AnswersBox">
                     {displayOptions}
                 </div>
-                {isAnswerSelected && <button key = {2} className = "NextButton" onClick = {()=>nextQuestion()}><img className = "NavigateMockExamImage" src = "../assets/images/icons/right-arrow.png" alt = "next button" /></button>}
+                {isAnswerSelected && <button key = {5} className = "NextButton" onClick = {()=>nextQuestion()}><img className = "NavigateMockExamImage" src = "../assets/images/icons/right-arrow.png" alt = "next button" /></button>}
                 </section>
             )
         }): null

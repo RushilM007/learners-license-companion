@@ -2,10 +2,10 @@ import OpenAI from "openai";
 import { createClient } from "@supabase/supabase-js";
 
 export const openai = new OpenAI({
-    apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true
-})
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
-const privateKey = import.meta.env.VITE_SUPABASE_SERVICEROLE_KEY
-const url = import.meta.env.VITE_SUPABASE_URL
-export const supabase = createClient(url, privateKey);
+export const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICEROLE_KEY
+);

@@ -1,13 +1,13 @@
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 //express creates a web server using node.js
 import express from "express"
 //CORS allows the react front end to communicate with the backend. this is needed because front end and back end 
 //are on different ports. 
 import cors from "cors"
 
-
+//to communicate with the ai 
 import Anthropic from "@anthropic-ai/sdk"
-
-dotenv.config({path: ".env.local"})
 
 //now we create the express server
 const app = express();
@@ -19,7 +19,6 @@ app.use(cors())
 app.use(express.json())
 
 //now here we create the anthropic client 
-
 const anthropic = new Anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY,
 })
@@ -81,4 +80,9 @@ app.post("/api/feedback", async (req, res)=>{
     }
 })
 
+app.listen(3001, () => {
+    console.log("Express running on http://localhost:3001")
+})
+
 export default app
+
