@@ -137,5 +137,8 @@ body{
         font-size: 10px;
         margin-top: 20px;
     }
+    #AuthHeader{
+        margin-bottom: 15px;
+    }
 }
 

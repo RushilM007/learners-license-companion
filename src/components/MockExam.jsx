@@ -87,6 +87,7 @@ export default function MockExam(){
         async function checkIfEightAreWrong(){
                 if (wrongAnswerCount === 8 ){
                 setQuestionsFinished(true)
+                setIsRunning(false)
                 await getFeedback()
             }
         }
