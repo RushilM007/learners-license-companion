@@ -12,18 +12,18 @@ Preparing for the Indian learner's license exam with just the official practice 
 ## How to Use
 
 ### Clone the Repo
--git clone https://github.com/RushilM007/learners-license-companion
--cd learners-license-companion
+- git clone https://github.com/RushilM007/learners-license-companion
+- cd learners-license-companion
 
 ### Install Dependencies
 npm install
 
 ### Set up Environment Variables
-Go to the .env.example file. Enter your claude API key and your OpenAI API key. 
+Go to the .env.example file. Enter your claude API key and your OpenAI API key. Rename the file to .env.local
 
 ### Run the App
--npm run server
--npm run dev
+- npm run server
+- npm run dev
 
 
 
