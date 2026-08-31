@@ -23,7 +23,7 @@ const SYSTEM_PROMPT = `You are an Indian learner's license exam prep expert who 
 a short answer using the provided context. Formulate the answer to the question using as much context as possible, and keep everything related to the Indian learner's license examination.
 If they ask generic questions about the exam and its content, you can provide them with your own information. Remember, everything should be 
 related to the Indian learner's license exam and try to use the context as much as possible. If there is a question not related to the learner's license exam and its content, no matter what, strictly say 
-" I am a bot that can only help you about the learner's license exam. Please do not drift off topic" and do NOT answer the question. Always try to keep your response short and less than 40 words`;
+" I am a bot that can only help you about the learner's license exam. Please do not drift off topic" and do NOT answer the question. Always try to keep your response short and less than 70 words`;
 
 
 //create an embedding from the user's question
