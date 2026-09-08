@@ -18,6 +18,7 @@ export default function LoginScreen(){
     const navigate = useNavigate()
 
     useEffect(()=>{
+        //checks if a user is signed in and watched for any sign in/ sign out events. 
         const unsub = onAuthStateChanged(auth, (user)=>{
             if (user){
                 navigate("/HomeScreen")
@@ -25,9 +26,11 @@ export default function LoginScreen(){
                 setCheckingAuth(false)
             }
         })
+        //stop listening when react unmounts
         return () => unsub()
     }, [])
 
+    //prevents login screen from appearing while auth checking is happening 
     if (checkingAuth) return null
 
    

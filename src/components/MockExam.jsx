@@ -238,6 +238,7 @@ export default function MockExam(){
 
     return (
         <>
+    
         <header className = "HomeScreenHeader">
                     {!outsideStartScreen && <Header 
                         title = "Mock Exam"

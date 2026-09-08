@@ -25,5 +25,6 @@ Go to the .env.example file. Enter your claude API key and your OpenAI API key. 
 - npm run server
 - npm run dev
 
-
+### Use the Live Deployment 
+https://learners-license-companion.vercel.app/
 
